@@ -18,8 +18,8 @@ $ yarn start
 $ yarn generate
 ```
 
+## Made with ❤️
+
 ## &copy; 2023 IT Jatim Balnus Support Business - Telkomsel
 
 # REDISTRIBUTE COPY OF THIS CODE IS STRICTLY PROHIBITED
-
-## Made with ❤️
