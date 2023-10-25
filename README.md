@@ -22,4 +22,4 @@ $ yarn generate
 
 # REDISTRIBUTE COPY OF THIS CODE IS STRICTLY PROHIBITED
 
-## Made with ❤️;
+## Made with ❤️
