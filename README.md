@@ -18,7 +18,7 @@ $ yarn start
 $ yarn generate
 ```
 
-## &copy; 20{{ new Date().getFullYear() }} IT Jatim Balnus Support Business - Telkomsel
+## &copy; 2023 IT Jatim Balnus Support Business - Telkomsel
 
 # REDISTRIBUTE COPY OF THIS CODE IS STRICTLY PROHIBITED
 
