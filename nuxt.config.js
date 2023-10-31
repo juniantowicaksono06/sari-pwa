@@ -1,6 +1,21 @@
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
+  server: {
+    host: '0.0.0.0'
+  },
+  
+  axios: {
+      baseUrl: process.env.VEDITA_API_BASE_URL,
+      proxyHeaders: false,
+      credentials: false
+  },
+  
+  env: {
+      VEDITA_API_BASE_URL: process.env.VEDITA_API_BASE_URL,
+      DID_API_KEY: process.env.DID_API_KEY,
+      VEDITA_API_KEY: process.env.VEDITA_API_KEY
+  },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -16,15 +31,33 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ],  
+    script: [
+        {
+            src: 'js/record.js', async: false,
+        },
+        {
+            src: 'js/jquery.slim.min.js', async: false
+        },
+        {
+          src: 'js/phaser.min.js', async: false,
+        },
+        {
+            src: 'js/bootstrap.bundle.min.js', async: true,
+        },
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '~assets/css/global.less'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
+  plugins: [ 
+    {
+      src: '~/plugins/axios',
+    },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -39,15 +72,23 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
+    '@nuxtjs/axios',
+    '@nuxtjs/pwa',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    babel: {
+      compact: true
+    }
   },
   pwa: {
+    workbox: {
+      scope: 'http://192.168.208.212'
+    },
     manifest: {
         name: 'SARI PWA',
-        short_name: 'SARIPWA',
+        short_name: 'SARI',
         description: 'This is an early build stage of SARI with Progressive Web Apps (PWA)', 
         start_url: '/',
         display: "standalone",
@@ -63,5 +104,5 @@ export default {
             }
         ]
     }
-}
+  }
 }
