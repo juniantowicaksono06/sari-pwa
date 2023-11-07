@@ -1,0 +1,422 @@
+{
+    "idle": {
+        "filename": "idle.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 43
+    },
+    "ba": {
+        "filename": "babibubeboca.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 15
+    },
+    "bi": {
+        "filename": "babibubeboca.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 16,
+        "frameEnd": 29
+    },
+    "bu": {
+        "filename": "babibubeboca.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 30,
+        "frameEnd": 44
+    },
+    "be": {
+        "filename": "babibubeboca.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 45,
+        "frameEnd": 57
+    },
+    "bo": {
+        "filename": "babibubeboca.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 58,
+        "frameEnd": 76
+    },
+    "ca": {
+        "filename": "babibubeboca.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 77,
+        "frameEnd": 90
+    },
+    "ci": {
+        "filename": "cicucecodadi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 14
+    },
+    "cu": {
+        "filename": "cicucecodadi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 15,
+        "frameEnd": 34
+    },
+    "ce": {
+        "filename": "cicucecodadi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 35,
+        "frameEnd": 44
+    },
+    "co": {
+        "filename": "cicucecodadi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 45,
+        "frameEnd": 61
+    },
+    "da": {
+        "filename": "cicucecodadi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 62,
+        "frameEnd": 78
+    },
+    "di": {
+        "filename": "cicucecodadi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 79,
+        "frameEnd": 90
+    },
+    "du": {
+        "filename": "dudedofafifu.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 19
+    },
+    "de": {
+        "filename": "dudedofafifu.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 20,
+        "frameEnd": 30
+    },
+    "do": {
+        "filename": "dudedofafifu.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 31,
+        "frameEnd": 45
+    },
+    "fa": {
+        "filename": "dudedofafifu.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 46,
+        "frameEnd": 59
+    },
+    "fi": {
+        "filename": "dudedofafifu.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 60,
+        "frameEnd": 77
+    },
+    "fu": {
+        "filename": "dudedofafifu.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 78,
+        "frameEnd": 90
+    },
+    "fe": {
+        "filename": "fefogagiguge.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 17
+    },
+    "fo": {
+        "filename": "fefogagiguge.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 18,
+        "frameEnd": 31
+    },
+    "ga": {
+        "filename": "fefogagiguge.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 32,
+        "frameEnd": 44
+    },
+    "gi": {
+        "filename": "fefogagiguge.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 45,
+        "frameEnd": 58
+    },
+    "gu": {
+        "filename": "fefogagiguge.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 59,
+        "frameEnd": 78
+    },
+    "ge": {
+        "filename": "fefogagiguge.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 79,
+        "frameEnd": 90
+    },
+    "la": {
+        "filename": "lalilulelo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 15
+    },
+    "li": {
+        "filename": "lalilulelo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 16,
+        "frameEnd": 28
+    },
+    "lu": {
+        "filename": "lalilulelo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 29,
+        "frameEnd": 44
+    },
+    "le": {
+        "filename": "lalilulelo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 45,
+        "frameEnd": 62
+    },
+    "lo": {
+        "filename": "lalilulelo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 63,
+        "frameEnd": 77
+    },
+    "ra": {
+        "filename": "rarirurero.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 14
+    },
+    "ri": {
+        "filename": "rarirurero.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 15,
+        "frameEnd": 35
+    },
+    "ru": {
+        "filename": "rarirurero.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 36,
+        "frameEnd": 49
+    },
+    "re": {
+        "filename": "rarirurero.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 50,
+        "frameEnd": 64
+    },
+    "ro": {
+        "filename": "rarirurero.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 65,
+        "frameEnd": 82
+    },
+    "wa": {
+        "filename": "wawiwuwewo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 15
+    },
+    "wi": {
+        "filename": "wawiwuwewo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 16,
+        "frameEnd": 33
+    },
+    "wu": {
+        "filename": "wawiwuwewo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 34,
+        "frameEnd": 47
+    },
+    "we": {
+        "filename": "wawiwuwewo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 48,
+        "frameEnd": 63
+    },
+    "wo": {
+        "filename": "wawiwuwewo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 64,
+        "frameEnd": 82
+    },
+    "a": {
+        "filename": "aiueo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 17
+    },
+    "i": {
+        "filename": "aiueo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 18,
+        "frameEnd": 34
+    },
+    "u": {
+        "filename": "aiueo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 35,
+        "frameEnd": 54
+    },
+    "e": {
+        "filename": "aiueo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 55,
+        "frameEnd": 74
+    },
+    "o": {
+        "filename": "aiueo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 75,
+        "frameEnd": 90
+    },
+    "by": {
+        "filename": "byby-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 10
+    },
+    "cy": {
+        "filename": "by-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 11,
+        "frameEnd": 24
+    },
+    "dy": {
+        "filename": "by-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 25,
+        "frameEnd": 40
+    },
+    "fy": {
+        "filename": "by-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 41,
+        "frameEnd": 49
+    },
+    "gy": {
+        "filename": "by-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 50,
+        "frameEnd": 66
+    },
+    "hy": {
+        "filename": "by-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 67,
+        "frameEnd": 81
+    },
+    "jy": {
+        "filename": "by-jy.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 82,
+        "frameEnd": 95
+    },
+    "ly": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 12
+    },
+    "my": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 13,
+        "frameEnd": 24
+    },
+    "ny": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 25,
+        "frameEnd": 37
+    },
+    "sy": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 38,
+        "frameEnd": 54
+    },
+    "ty": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 55,
+        "frameEnd": 76
+    },
+    "wy": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 77,
+        "frameEnd": 89
+    },
+    "why": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 90,
+        "frameEnd": 111
+    },
+    "ay": {
+        "filename": "ly-ay.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 112,
+        "frameEnd": 129
+    }
+}

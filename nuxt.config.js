@@ -12,9 +12,10 @@ export default {
   },
   
   env: {
-      VEDITA_API_BASE_URL: process.env.VEDITA_API_BASE_URL,
-      DID_API_KEY: process.env.DID_API_KEY,
-      VEDITA_API_KEY: process.env.VEDITA_API_KEY
+    VEDITA_API_BASE_URL: process.env.VEDITA_API_BASE_URL,
+    DID_API_KEY: process.env.DID_API_KEY,
+    VEDITA_API_KEY: process.env.VEDITA_API_KEY,
+    SALT_KEY: process.env.SALT_KEY
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -39,9 +40,9 @@ export default {
         {
             src: 'js/jquery.slim.min.js', async: false
         },
-        {
-          src: 'js/phaser.min.js', async: false,
-        },
+        // {
+        //   src: 'js/phaser.min.js', async: false,
+        // },
         {
             src: 'js/bootstrap.bundle.min.js', async: true,
         },
@@ -65,7 +66,7 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
-    '@nuxtjs/pwa',
+    '@nuxtjs/pwa'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -74,6 +75,7 @@ export default {
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    'cookie-universal-nuxt',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
