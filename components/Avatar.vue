@@ -363,7 +363,7 @@
                             this.anims.create({
                                 key: value,
                                 frames: this.anims.generateFrameNumbers(value, { start: data[value]['frameStart'], end: data[value]['frameEnd'] }),
-                                frameRate: 30,
+                                frameRate: 37,
                             });
                             if(index == 0) {
                                 nuxtObj.speak()
@@ -430,7 +430,9 @@
                     result = false
                     alert("Error occured")
                 }
-                this.textInput = ""
+                setTimeout(() => {
+                    this.textInput = ""
+                }, 2000)
                 this.$store.dispatch('loading/actionHideLoading')
                 if(result == false || result == null) return
                 if(result.status_code == 200) {
