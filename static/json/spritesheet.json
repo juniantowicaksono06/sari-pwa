@@ -174,6 +174,118 @@
         "frameStart": 79,
         "frameEnd": 90
     },
+    "go": {
+        "filename": "gohahihuhe.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 18
+    },
+    "ha": {
+        "filename": "gohahihuhe.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 19,
+        "frameEnd": 36
+    },
+    "hi": {
+        "filename": "gohahihuhe.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 37,
+        "frameEnd": 50
+    },
+    "hu": {
+        "filename": "gohahihuhe.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 51,
+        "frameEnd": 61
+    },
+    "he": {
+        "filename": "gohahihuhe.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 62,
+        "frameEnd": 85
+    },
+    "ho": {
+        "filename": "hojajijuje.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 14
+    },
+    "ja": {
+        "filename": "hojajijuje.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 15,
+        "frameEnd": 35
+    },
+    "ji": {
+        "filename": "hojajijuje.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 36,
+        "frameEnd": 50
+    },
+    "ju": {
+        "filename": "hojajijuje.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 51,
+        "frameEnd": 65
+    },
+    "je": {
+        "filename": "hojajijuje.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 66,
+        "frameEnd": 82
+    },
+    "jo": {
+        "filename": "jokakikuke.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 14
+    },
+    "ka": {
+        "filename": "jokakikuke.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 15,
+        "frameEnd": 37
+    },
+    "ki": {
+        "filename": "jokakikuke.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 38,
+        "frameEnd": 53
+    },
+    "ku": {
+        "filename": "jokakikuke.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 54,
+        "frameEnd": 70
+    },
+    "ke": {
+        "filename": "jokakikuke.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 71,
+        "frameEnd": 85
+    },
+    "ko": {
+        "filename": "jokakikuke.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 19
+    },
     "la": {
         "filename": "lalilulelo.webp",
         "frameWidth": 295,
@@ -208,6 +320,153 @@
         "frameHeight": 337,
         "frameStart": 63,
         "frameEnd": 77
+    },
+    "ma": {
+        "filename": "lomamimumemo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 15,
+        "frameEnd": 35
+    },
+    "na": {
+        "filename": "naninuneno.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 20
+    },
+    "ni": {
+        "filename": "naninuneno.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 21,
+        "frameEnd": 34
+    },
+    "nu": {
+        "filename": "naninuneno.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 35,
+        "frameEnd": 54
+    },
+    "ne": {
+        "filename": "naninuneno.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 55,
+        "frameEnd": 73
+    },
+    "no": {
+        "filename": "naninuneno.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 74,
+        "frameEnd": 90
+    },
+    "pa": {
+        "filename": "papipupepo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 18
+    },
+    "pi": {
+        "filename": "papipupepo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 19,
+        "frameEnd": 37
+    },
+    "pu": {
+        "filename": "papipupepo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 38,
+        "frameEnd": 54
+    },
+    "pe": {
+        "filename": "papipupepo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 55,
+        "frameEnd": 70
+    },
+    "po": {
+        "filename": "papipupepo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 55,
+        "frameEnd": 70
+    },
+    "qa": {
+        "filename": "qaqiquqeqo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 19
+    },
+    "qi": {
+        "filename": "qaqiquqeqo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 20,
+        "frameEnd": 36
+    },
+    "qu": {
+        "filename": "qaqiquqeqo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 37,
+        "frameEnd": 51
+    },
+    "qe": {
+        "filename": "qaqiquqeqo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 52,
+        "frameEnd": 72
+    },
+    "qo": {
+        "filename": "qaqiquqeqo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 73,
+        "frameEnd": 88
+    },
+    "sa": {
+        "filename": "sasisuseso.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 17
+    },
+    "si": {
+        "filename": "sasisuseso.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 18,
+        "frameEnd": 33
+    },
+    "su": {
+        "filename": "sasisuseso.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 34,
+        "frameEnd": 46
+    },
+    "se": {
+        "filename": "sasisuseso.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 47,
+        "frameEnd": 62
+    },
+    "so": {
+        "filename": "sasisuseso.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 61,
+        "frameEnd": 82
     },
     "ra": {
         "filename": "rarirurero.webp",
@@ -244,6 +503,76 @@
         "frameStart": 65,
         "frameEnd": 82
     },
+    "ta": {
+        "filename": "tatitutetova.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 12
+    },
+    "ti": {
+        "filename": "tatitutetova.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 13,
+        "frameEnd": 26
+    },
+    "tu": {
+        "filename": "tatitutetova.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 27,
+        "frameEnd": 44
+    },
+    "te": {
+        "filename": "tatitutetova.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 45,
+        "frameEnd": 55
+    },
+    "to": {
+        "filename": "tatitutetova.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 56,
+        "frameEnd": 70
+    },
+    "va": {
+        "filename": "tatitutetova.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 71,
+        "frameEnd": 88
+    },
+    "vi": {
+        "filename": "vivuvevowa.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 13
+    },
+    "vu": {
+        "filename": "vivuvevowa.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 14,
+        "frameEnd": 27
+    },
+    "ve": {
+        "filename": "vivuvevowa.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 28,
+        "frameEnd": 50
+    },
+    "vo": {
+        "filename": "vivuvevowa.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 51,
+        "frameEnd": 64
+    },
     "wa": {
         "filename": "wawiwuwewo.webp",
         "frameWidth": 295,
@@ -278,6 +607,111 @@
         "frameHeight": 337,
         "frameStart": 64,
         "frameEnd": 82
+    },
+    "xa": {
+        "filename": "wiwuwewoxa.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 67,
+        "frameEnd": 81
+    },
+    "xi": {
+        "filename": "xixuxexoyayi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 14
+    },
+    "xu": {
+        "filename": "xixuxexoyayi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 15,
+        "frameEnd": 32
+    },
+    "xe": {
+        "filename": "xixuxexoyayi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 33,
+        "frameEnd": 46
+    },
+    "xo": {
+        "filename": "xixuxexoyayi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 47,
+        "frameEnd": 61
+    },
+    "ya": {
+        "filename": "xixuxexoyayi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 62,
+        "frameEnd": 76
+    },
+    "yi": {
+        "filename": "xixuxexoyayi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 77,
+        "frameEnd": 90
+    },
+    "yu": {
+        "filename": "yuyeyozazi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 15
+    },
+    "ye": {
+        "filename": "yuyeyozazi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 16,
+        "frameEnd": 32
+    },
+    "yo": {
+        "filename": "yuyeyozazi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 33,
+        "frameEnd": 51
+    },
+    "za": {
+        "filename": "yuyeyozazi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 52,
+        "frameEnd": 69
+    },
+    "zi": {
+        "filename": "yuyeyozazi.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 70,
+        "frameEnd": 87
+    },
+    "zu": {
+        "filename": "zuzezo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 15
+    },
+    "ze": {
+        "filename": "zuzezo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 16,
+        "frameEnd": 31
+    },
+    "zo": {
+        "filename": "zuzezo.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 32,
+        "frameEnd": 52
     },
     "a": {
         "filename": "aiueo.webp",

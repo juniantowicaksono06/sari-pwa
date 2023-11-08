@@ -44,7 +44,6 @@
             }
         },
         methods: {
-            // ...mapActions("SariSpriteSheet", ['initSpriteSheet', 'changeSpriteSheet']),
             initSpritesheet() {
                 const idle_sprite = data['idle']
                 let nuxtObj = this
@@ -184,16 +183,106 @@
                     if(list.length > 0) {
                         list.forEach((value) => {
                             let v = value.toLowerCase()
-                            if (v == "ha" || v == "ma") {
+                            if( v== "ma" || v == "pa") {
                                 v = "ba"
                             }
-                            if (v == "na") {
+                            if( v== "mi" || v == "pi") {
+                                v = "bi"
+                            }
+                            if( v== "mu" || v == "pu") {
+                                v = "bu"
+                            }
+                            if(
+                                v == "da" || 
+                                v == "ga" || 
+                                v == "ha" || 
+                                v == "ja" || 
+                                v == "ka" || 
+                                v == "na" || 
+                                v == "qa" || 
+                                v == "sa" || 
+                                v == "xa" || 
+                                v == "ya" || 
+                                v == "za"
+                            ) {
                                 v = "ca"
                             }
-                            if (v == "ni") {
+                            if(
+                                v == "di" ||
+                                v == "gi" ||
+                                v == "hi" ||
+                                v == "ji" ||
+                                v == "ki" ||
+                                v == "ni" ||
+                                v == "qi" ||
+                                v == "si" ||
+                                v == "xi" ||
+                                v == "yi" ||
+                                v == "zi" 
+                            ) {
                                 v = "ci"
                             }
+                            if(
+                                v == "du" ||
+                                v == "gu" ||
+                                v == "hu" ||
+                                v == "ju" ||
+                                v == "ku" ||
+                                v == "nu" ||
+                                v == "qu" ||
+                                v == "su" ||
+                                v == "xu" ||
+                                v == "yu" ||
+                                v == "zu" ||
+                                v == "ru" ||
+                                v == "tu" ||
+                                v == "fu" ||
+                                v == "vu" ||
+                                v == "lu" ||
+                                v == "wu"
+                            ) {
+                                v = "cu"
+                            }
+                            if(
+                                v == "de" ||
+                                v == "ge" ||
+                                v == "he" ||
+                                v == "je" ||
+                                v == "ke" ||
+                                v == "ne" ||
+                                v == "qe" ||
+                                v == "se" ||
+                                v == "xe" ||
+                                v == "ye" ||
+                                v == "ze"
+                            ) {
+                                v = "ce"
+                            }
+                            if(
+                                v == "do" ||
+                                v == "go" ||
+                                v == "ho" ||
+                                v == "jo" ||
+                                v == "ko" ||
+                                v == "no" ||
+                                v == "qo" ||
+                                v == "so" ||
+                                v == "xo" ||
+                                v == "yo" ||
+                                v == "zo" ||
+                                v == "ro" ||
+                                v == "to"
+                            ) {
+                                v = "co"
+                            }
+                            if(v == "te") {
+                                v = "re"
+                            }
+                            if(v == "ta") {
+                                v = "ra"
+                            }
                             nuxtObj.selectedSprite.push(v)
+                            nuxtObj.spriteAnim.push(v)
                         })
                     }
                 })
@@ -220,17 +309,16 @@
                             this.anims.create({
                                 key: value,
                                 frames: this.anims.generateFrameNumbers(value, { start: data[value]['frameStart'], end: data[value]['frameEnd'] }),
-                                frameRate: 40,
+                                frameRate: 51,
                             });
                             if(index == 0) {
-                                sprite.anims.play(value, true);
                                 nuxtObj.playAudio()
+                                sprite.anims.play(value, true);
                             }
                         })
                         // Play the next spritesheet
                         function playNext() {
-                            if(nuxtObj.selectedSprite.length <= 0) {
-                                // console.log(nuxtObj.Game.scene)
+                            if(nuxtObj.selectedSprite.length <= 0 || nuxtObj.selectedSprite.length == 1) {
                                 nuxtObj.Game.scene.remove('speak')
                                 nuxtObj.spriteAnim.forEach((value) => {
                                     nuxtObj.Game.anims.remove(value)
