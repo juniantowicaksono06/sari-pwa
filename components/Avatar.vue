@@ -17,10 +17,14 @@
             <!-- <select name="" id=""></select> -->
             <div id="mainInput">
                 <div class="d-flex justify-content-center align-items-center mb-2">
-                    <input class="form-control w-50" v-model="textToSpeak" placeholder="Type text for me to speak...">
+                    <input class="form-control w-50" v-model="textInput" placeholder="Your spoken text will be here..." disabled>
                 </div>
-                <div class="d-flex justify-content-center align-items-center mb-2">
+                <!-- <div class="d-flex justify-content-center align-items-center mb-2">
                     <button class="btn btn-primary" @click="actionPlayAnim()">Submit</button>
+                </div> -->
+                <div class="d-flex justify-content-center align-items-center mb-2">
+                    <button class="btn btn-primary" @click="actionRecognize()" v-if="!isRecognizing">Record</button>
+                    <button class="btn btn-danger" v-else>Record</button>
                 </div>
             </div>
         </div>
@@ -35,15 +39,29 @@
         data() {
             return {
                 Game: null,
-                textToSpeak: "",
+                textInput: "",
                 selectedSprite: [],
                 spriteAnim: [],
                 phaserObj: null,
-                isAnimPlay: false
-                // spriteSheetName: this.$store.state.SariSpritesheet.spritesheet_name,
+                isAnimPlay: false,
+                synth: null,
+                speakSynthesis: null,
+                speech_recognizer: null,
+                isRecognizing: false
             }
         },
         methods: {
+            actionRecognize() {
+                if(this.isRecognizing) return
+                this.isRecognizing = true
+                this.speech_recognizer.start()
+            },
+            loadText(text) {
+                this.speakSynthesis.text = text
+            },
+            speak() {
+                this.synth.speak(this.speakSynthesis)
+            },
             initSpritesheet() {
                 const idle_sprite = data['idle']
                 let nuxtObj = this
@@ -77,8 +95,8 @@
                 this.Game = game
             },
             getSyllables() {
-                if(this.textToSpeak == "") return false
-                let inputText = this.textToSpeak
+                if(this.speakSynthesis.text == "") return false
+                let inputText = this.speakSynthesis.text
                 let words = inputText.split(' ')
                 const vowels = ['A', 'I', 'U', 'E', 'O']
                 const syllables = []
@@ -153,44 +171,65 @@
                 return objectURL
             },
             async actionPlayAnim() {
-                if(this.isAnimPlay || this.textToSpeak == "") return
+                if(this.isAnimPlay || this.speakSynthesis.text == "") return
                 this.isAnimPlay = true
                 const syllables = this.getSyllables()
                 let nuxtObj = this
 
-                let formData = new FormData()
-                formData.append('text', this.textToSpeak)
-                formData.append('language', "ID")
+                // let formData = new FormData()
+                // formData.append('text', this.textInput)
+                // formData.append('language', "ID")
                 // formData.append('audio_provider', 'microsoft')
                 // formData.append('audio_voice_id', 'id-ID-GadisNeural')
-                var audio_request = null;
-                try {
-                    let audio_request = await this.$axios.$post('vedita-tts', formData)
-                    if(audio_request['status_code'] == 200) {
-                        const { audio_b64 } = audio_request['data']
-                        const objectURL = this.convertB64ToMp3(audio_b64)
-                        this.loadAudio(objectURL)
-                    }
-                }
-                catch(error) {
-                    audio_request = false
-                }
-                if(audio_request == false) {
-                    alert("Error")
-                    return
-                }
+                // var audio_request = null;
+                // try {
+                //     let audio_request = await this.$axios.$post('vedita-tts', formData)
+                //     if(audio_request['status_code'] == 200) {
+                //         const { audio_b64 } = audio_request['data']
+                //         const objectURL = this.convertB64ToMp3(audio_b64)
+                //         this.loadAudio(objectURL)
+                //     }
+                // }
+                // catch(error) {
+                //     audio_request = false
+                // }
+                // if(audio_request == false) {
+                //     alert("Error")
+                //     return
+                // }
                 syllables.forEach((list) => {
                     if(list.length > 0) {
                         list.forEach((value) => {
                             let v = value.toLowerCase()
+                            if(v == "va") {
+                                v = "fa"
+                            }
+                            if(v == "vi") {
+                                v = "fi"
+                            }
+                            if(v == "ve") {
+                                v = "fe"
+                            }
+                            if(v == "vo") {
+                                v = "fo"
+                            }
                             if( v== "ma" || v == "pa") {
                                 v = "ba"
                             }
                             if( v== "mi" || v == "pi") {
                                 v = "bi"
                             }
+                            if( v== "ngi") {
+                                v = "i"
+                            }
                             if( v== "mu" || v == "pu") {
                                 v = "bu"
+                            }
+                            if( v== "me" || v == "pe") {
+                                v = "be"
+                            }
+                            if( v== "mo" || v == "po") {
+                                v = "bo"
                             }
                             if(
                                 v == "da" || 
@@ -281,6 +320,21 @@
                             if(v == "ta") {
                                 v = "ra"
                             }
+                            if(v == "ti" || v == "ty") {
+                                v = "ri"
+                            }
+                            if(v == "py") {
+                                v = "by"
+                            }
+                            if(v == "shy" || v == "xy") {
+                                v = "cy"
+                            }
+                            if(v == "vy" || v == "fly") {
+                                v = "fy"
+                            }
+                            if(v == "ky") {
+                                v = "gy"
+                            }
                             nuxtObj.selectedSprite.push(v)
                             nuxtObj.spriteAnim.push(v)
                         })
@@ -309,11 +363,12 @@
                             this.anims.create({
                                 key: value,
                                 frames: this.anims.generateFrameNumbers(value, { start: data[value]['frameStart'], end: data[value]['frameEnd'] }),
-                                frameRate: 51,
+                                frameRate: 30,
                             });
                             if(index == 0) {
-                                nuxtObj.playAudio()
+                                nuxtObj.speak()
                                 sprite.anims.play(value, true);
+                                // nuxtObj.playAudio()
                             }
                         })
                         // Play the next spritesheet
@@ -365,9 +420,65 @@
             hideIdle() {
                 document.querySelector('canvas.avatar_canvas').classList.remove("show")
             },
+            async requestVedita() {
+                this.$store.dispatch('loading/actionShowLoading')
+                var result = null;
+                try {
+                    result = await this.$axios.$get(`vedita-datacenter?text=${this.textInput}`)
+                    
+                } catch (error) {
+                    result = false
+                    alert("Error occured")
+                }
+                this.textInput = ""
+                this.$store.dispatch('loading/actionHideLoading')
+                if(result == false || result == null) return
+                if(result.status_code == 200) {
+                    const { data } = result
+                    if("response_text" in data) {
+                        const {response_text} = data
+                        if(response_text == null || response_text == undefined) return
+                        else if(response_text.toLowerCase().trim() == "") return
+                        this.loadText(response_text)
+                        this.actionPlayAnim()
+                    }
+                }
+            }
         },
         mounted() {
             this.initSpritesheet()
+            this.synth = window.speechSynthesis
+            
+            this.speakSynthesis = new SpeechSynthesisUtterance()
+            this.speakSynthesis.lang = 'id-ID'
+            this.speakSynthesis.rate = 0.6
+            // this.synth.pitch = 1.1
+            this.speakSynthesis.voice = this.synth.getVoices()[11]
+            // Check if the browser supports the Web Speech API
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                    // Create a new SpeechRecognition object
+                // const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                this.speech_recognizer = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+                // Define event handlers for the recognition process
+                this.speech_recognizer.onstart = () => {
+                    console.log('Speech recognition started');
+                };
+
+                this.speech_recognizer.onresult = async (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    this.textInput = transcript
+                    await this.requestVedita()
+                    this.isRecognizing = false
+                };
+
+                this.speech_recognizer.onend = () => {
+                    console.log('Speech recognition ended');
+                };
+                this.speech_recognizer.lang = 'id-ID'
+            } else {
+                console.log('Speech recognition not supported in this browser.');
+            }
         }
     }
 </script>
