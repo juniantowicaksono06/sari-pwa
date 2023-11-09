@@ -9,7 +9,28 @@
 </style>
 <template>
     <div class="container h-100">
-        <div class="d-flex justify-content-center align-items-end w-100 h-100">
+        <b-modal class="modal-item" centered v-model="IS_CAMERA_MODAL_OPEN" @hide="onCameraModalClose" hide-footer size="md" hide-header>
+            <h1>Camera</h1>
+            <div class="w-100">
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center mt-4">
+                    <h3 class="text-center" v-if="CAMERA_STREAM == null && CAPTURED_IMAGE == null">The Camera is starting...</h3>
+                </div>
+                <video id="cameraFeed" ref="cameraFeed" class="w-100" autoplay :class="{'d-none': CAPTURED_IMAGE != null || CAMERA_STREAM == null}"></video>
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+                <canvas id="canvasPhoto" class="w-100 d-none" ref="canvasPhoto"></canvas>
+                <img :src="CAPTURED_IMAGE" alt="taken_photos" :class="{'d-none': CAPTURED_IMAGE == null}" class="img-fluid" >
+            </div>
+            <div class="d-block mb-3">
+                <button class="btn btn-primary btn-block" @click="actionTakePicture()" v-if="CAPTURED_IMAGE == null">Take a picture</button>
+                <button class="btn btn-success btn-block mb-3" @click="actionDownloadPicture()" v-if="CAPTURED_IMAGE != null">Download Picture</button>
+                <button class="btn btn-primary btn-block" @click="actionRetakePicture()" v-if="CAPTURED_IMAGE != null">Take Picture again</button>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-danger" @click="actionCloseCameraModal()">Close</button>
+            </div>
+        </b-modal>
+        <div class="d-flex justify-content-center align-items-end w-100 h-100 d-none">
             <audio id="audioPlayer"  src="" class="d-none" ref="audioPlayer"></audio>
             <video id="talkVideo" class="img-fluid" width="25%" autoplay ref="talkVideo"></video>
         </div>
@@ -25,6 +46,9 @@
                 <div class="d-flex justify-content-center align-items-center mb-2">
                     <button class="btn btn-primary" @click="actionRecognize()" v-if="!isRecognizing">Record</button>
                     <button class="btn btn-danger" v-else>Record</button>
+                </div>
+                <div class="d-flex justify-content-center align-items-center mb-2">
+                    <button class="btn btn-primary" @click="actionOpenCameraModal()">Camera</button>
                 </div>
             </div>
         </div>
@@ -47,10 +71,77 @@
                 synth: null,
                 speakSynthesis: null,
                 speech_recognizer: null,
-                isRecognizing: false
+                isRecognizing: false,
+                IS_CAMERA_MODAL_OPEN: false,
+                CAMERA_STREAM: null,
+                CAPTURED_IMAGE: null,
             }
         },
         methods: {
+            actionDownloadPicture() {
+                const blob = this.dataURItoBlob(this.CAPTURED_IMAGE)
+                const downloadLink = document.createElement('a')
+                downloadLink.href = window.URL.createObjectURL(blob)
+                downloadLink.download = 'captured_image.jpg'
+                downloadLink.click()
+            },
+            dataURItoBlob(dataURI) {
+                const byteString = atob(dataURI.split(',')[1]);
+                const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new Blob([ab], { type: mimeString });
+            },
+            actionRetakePicture() {
+                this.stopCamera()
+                this.CAPTURED_IMAGE = null
+                this.startCamera()
+            },
+            actionTakePicture() {
+                const desiredWidth = 1280; // Adjust to your desired width
+                const desiredHeight = 720; // Adjust to your desired height
+                this.$refs.canvasPhoto.width = desiredWidth
+                this.$refs.canvasPhoto.height = desiredHeight
+                this.$refs.canvasPhoto.getContext('2d').drawImage(this.$refs.cameraFeed, 0, 0, desiredWidth, desiredHeight)
+                this.CAPTURED_IMAGE = this.$refs.canvasPhoto.toDataURL('image/jpeg')
+                this.stopCamera()
+            },
+            onCameraModalClose() {
+                this.IS_CAMERA_MODAL_OPEN = false
+                this.CAPTURED_IMAGE = null
+                this.stopCamera()
+            },
+            actionCloseCameraModal() {
+                this.IS_CAMERA_MODAL_OPEN = false
+                this.CAPTURED_IMAGE = null
+                this.stopCamera()
+            },
+            stopCamera() {
+                if(this.CAMERA_STREAM != null) {
+                    console.log("TESTING")
+                    const tracks = this.CAMERA_STREAM.getTracks()
+                    tracks.forEach((track) => {
+                        track.stop()
+                    })
+                    this.$refs.cameraFeed.srcObject = null
+                    this.CAMERA_STREAM = null
+                }
+            },
+            async startCamera() {
+                try {
+                    this.CAMERA_STREAM = await navigator.mediaDevices.getUserMedia({video: true})
+                    this.$refs.cameraFeed.srcObject = this.CAMERA_STREAM
+                } catch (error) {
+                    alert("Cannot start camera. Make sure you enabled camera permission")
+                }
+            },
+            actionOpenCameraModal() {
+                this.IS_CAMERA_MODAL_OPEN = true
+                this.startCamera()
+            },
             actionRecognize() {
                 if(this.isRecognizing) return
                 this.isRecognizing = true
