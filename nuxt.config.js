@@ -15,7 +15,9 @@ export default {
     VEDITA_API_BASE_URL: process.env.VEDITA_API_BASE_URL,
     DID_API_KEY: process.env.DID_API_KEY,
     VEDITA_API_KEY: process.env.VEDITA_API_KEY,
-    SALT_KEY: process.env.SALT_KEY
+    SALT_KEY: process.env.SALT_KEY,
+    DEBUG_MODE: process.env.DEBUG_MODE,
+    ONESIGNAL_APPID: process.env.ONESIGNAL_APPID
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -26,7 +28,14 @@ export default {
     },
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0'
+      },
+      {
+        name: 'HandheldFriendly',
+        content: 'true'
+      },
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
@@ -34,6 +43,9 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ],  
     script: [
+        // {
+        //     src: 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js', async: false,
+        // },
         {
             src: 'js/record.js', async: false,
         },
@@ -76,7 +88,16 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     'cookie-universal-nuxt',
+    '@nuxtjs/onesignal'
   ],
+  oneSignal: {
+    // cdn: true,
+    // OneSignalSDK: "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js",
+    init: {
+      appId: process.env.ONESIGNAL_APPID,
+      allowLocalhostAsSecureOrigin: true
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
@@ -85,9 +106,6 @@ export default {
     }
   },
   pwa: {
-    workbox: {
-      scope: 'http://192.168.208.212'
-    },
     manifest: {
         name: 'SARI PWA',
         short_name: 'SARI',

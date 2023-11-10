@@ -36,20 +36,23 @@
         </div>
         <div>
             <!-- <select name="" id=""></select> -->
-            <div id="mainInput">
+            <div id="mainInput" v-if="DEBUG_MODE == 'true'">
                 <div class="d-flex justify-content-center align-items-center mb-2">
-                    <input class="form-control w-50" v-model="textInput" placeholder="Your spoken text will be here..." disabled>
+                    <input class="form-control w-50" v-model="textInput" placeholder="Type your text...">
+                </div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn btn-primary w-50" @click="actionRequestVedita()">Speak</button>
                 </div>
                 <!-- <div class="d-flex justify-content-center align-items-center mb-2">
                     <button class="btn btn-primary" @click="actionPlayAnim()">Submit</button>
                 </div> -->
-                <div class="d-flex justify-content-center align-items-center mb-2">
+                <!-- <div class="d-flex justify-content-center align-items-center mb-2">
                     <button class="btn btn-primary" @click="actionRecognize()" v-if="!isRecognizing">Record</button>
                     <button class="btn btn-danger" v-else>Record</button>
                 </div>
                 <div class="d-flex justify-content-center align-items-center mb-2">
                     <button class="btn btn-primary" @click="actionOpenCameraModal()">Camera</button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -75,6 +78,8 @@
                 IS_CAMERA_MODAL_OPEN: false,
                 CAMERA_STREAM: null,
                 CAPTURED_IMAGE: null,
+                DEBUG_MODE: process.env.DEBUG_MODE,
+                SYNTHESIS_TIMEOUT: null
             }
         },
         methods: {
@@ -118,6 +123,11 @@
                 this.IS_CAMERA_MODAL_OPEN = false
                 this.CAPTURED_IMAGE = null
                 this.stopCamera()
+            },
+            audioSynthesisTimer() {
+                window.speechSynthesis.pause();
+                window.speechSynthesis.resume();
+                this.SYNTHESIS_TIMEOUT = setTimeout(this.audioSynthesisTimer, 1000);
             },
             stopCamera() {
                 if(this.CAMERA_STREAM != null) {
@@ -511,42 +521,79 @@
             hideIdle() {
                 document.querySelector('canvas.avatar_canvas').classList.remove("show")
             },
-            async requestVedita() {
+            async actionRequestVedita() {
                 this.$store.dispatch('loading/actionShowLoading')
                 var result = null;
+                let data = []
                 try {
-                    result = await this.$axios.$get(`vedita-datacenter?text=${this.textInput}`)
+                    result = await this.$axios.$get(`vedita-datacenter?text=${this.textInput.toLowerCase()}`, {
+                        validateStatus: function(status) {
+                            return status < 500 && status != 404
+                        }
+                    })
+                    // tag = result['data']['tag']
+                    // response_text = result['data']['response_text']
+                    data = result['data']
                     
                 } catch (error) {
-                    result = false
-                    alert("Error occured")
-                }
-                setTimeout(() => {
-                    this.textInput = ""
-                }, 2000)
-                this.$store.dispatch('loading/actionHideLoading')
-                if(result == false || result == null) return
-                if(result.status_code == 200) {
-                    const { data } = result
-                    if("response_text" in data) {
-                        const {response_text} = data
-                        if(response_text == null || response_text == undefined) return
-                        else if(response_text.toLowerCase().trim() == "") return
-                        this.loadText(response_text)
-                        this.actionPlayAnim()
+                    result = error.response['data']['data']
+                    if(result.status_code != 404) {
+                        result = false
+                        alert("Error occured")
+                    }
+                    else {
+                        data = result
                     }
                 }
+                this.$store.dispatch('loading/actionHideLoading')
+                if (result == false && data.length == 0) return
+                this.handleVoiceCommands(data)
+            },
+            handleVoiceCommands(data) {
+                const {tag} = data
+                let response_text = data['response_text']
+                console.log(response_text)
+                
+                if(tag == "telpon") {
+                    response_text = "Maaf, untuk sementara ini SARI PWA tidak dapat melakukan panggilan telepon"
+                }
+
+                if(response_text != "" && response_text != null && response_text != undefined) {
+                    this.loadText(response_text)
+                    this.speak()
+                }
+
+                if(tag == "capture_foto") {
+                    this.actionOpenCameraModal()
+                }
+            },
+            resumeInfinity() {
+                window.speechSynthesis.resume();
+                this.SYNTHESIS_TIMEOUT = setTimeout(this.resumeInfinity, 1000);
             }
         },
         mounted() {
             this.initSpritesheet()
             this.synth = window.speechSynthesis
             
+            window.speechSynthesis.cancel();
             this.speakSynthesis = new SpeechSynthesisUtterance()
+            this.speakSynthesis.onstart = () => {
+                console.log("TESTING SAJA")
+                this.audioSynthesisTimer()
+            }
+            this.speakSynthesis.onend = () => {
+                clearTimeout(this.SYNTHESIS_TIMEOUT)
+            }
+            // this.SYNTHESIS_TIMEOUT = setTimeout(this.audioSynthesisTimer, 1000)
             this.speakSynthesis.lang = 'id-ID'
             this.speakSynthesis.rate = 0.6
             // this.synth.pitch = 1.1
             this.speakSynthesis.voice = this.synth.getVoices()[11]
+            // this.speakSynthesis.onend = () => {
+            //     console.log("TESTING")
+            //     clearTimeout(this.SYNTHESIS_TIMEOUT)
+            // }
             // Check if the browser supports the Web Speech API
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
                     // Create a new SpeechRecognition object
@@ -567,11 +614,27 @@
 
                 this.speech_recognizer.onend = () => {
                     console.log('Speech recognition ended');
+                    // this.actionRecognize()
+                    // this.isRecognizing = true
+                    // this.speech_recognizer.start()
                 };
                 this.speech_recognizer.lang = 'id-ID'
+                // this.actionRecognize()
             } else {
                 console.log('Speech recognition not supported in this browser.');
             }
+            this.$OneSignal.push(() => {
+                this.$OneSignal.on('notificationDisplay', (event) => {
+                    console.log('OneSignal notification displayed:', event);
+                });
+            });
+            // window.OneSignalDeferred = window.OneSignalDeferred || [];
+            // OneSignalDeferred.push(function(OneSignal) {
+            //     console.log("TESTING")
+            //     OneSignal.init({
+            //         appId: "ebea8143-f92d-44ab-b94f-03b09e4a6d95",
+            //     });
+            // });
         }
     }
 </script>

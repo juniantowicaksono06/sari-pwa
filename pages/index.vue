@@ -31,3 +31,11 @@
     },
   }
 </script>
+<!-- <script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(function(OneSignal) {
+    OneSignal.init({
+      appId: "ebea8143-f92d-44ab-b94f-03b09e4a6d95",
+    });
+  });
+</script> -->
