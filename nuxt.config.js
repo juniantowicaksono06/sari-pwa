@@ -17,7 +17,8 @@ export default {
     VEDITA_API_KEY: process.env.VEDITA_API_KEY,
     SALT_KEY: process.env.SALT_KEY,
     DEBUG_MODE: process.env.DEBUG_MODE,
-    ONESIGNAL_APPID: process.env.ONESIGNAL_APPID
+    ONESIGNAL_APPID: process.env.ONESIGNAL_APPID,
+    OPENAI_TOKEN: process.env.OPENAI_TOKEN
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head

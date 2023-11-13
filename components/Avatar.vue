@@ -47,7 +47,7 @@
                     <button class="btn btn-primary" @click="actionPlayAnim()">Submit</button>
                 </div> -->
                 <!-- <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button class="btn btn-primary" @click="actionRecognize()" v-if="!isRecognizing">Record</button>
+                    <button class="btn btn-primary" @click="actionStartRecognize()" v-if="!isRecognizing">Record</button>
                     <button class="btn btn-danger" v-else>Record</button>
                 </div>
                 <div class="d-flex justify-content-center align-items-center mb-2">
@@ -61,6 +61,7 @@
     // import { mapActions } from 'vuex';
     import Phaser from 'phaser'
     import data from "../static/json/spritesheet.json"
+    import constant from '../config/constant'
 
     export default {
         data() {
@@ -74,12 +75,25 @@
                 synth: null,
                 speakSynthesis: null,
                 speech_recognizer: null,
-                isRecognizing: false,
+                isRecognizing: 0,
                 IS_CAMERA_MODAL_OPEN: false,
                 CAMERA_STREAM: null,
                 CAPTURED_IMAGE: null,
                 DEBUG_MODE: process.env.DEBUG_MODE,
-                SYNTHESIS_TIMEOUT: null
+                SYNTHESIS_TIMEOUT: null,
+                status: constant.STATUS_IDLE,
+                trigger_timeout: null
+            }
+        },
+        watch: {
+            "isRecognizing": {
+                handler: function(value) {
+                    if(value == 0) {
+                        setTimeout(() => {
+                            this.actionStartRecognize()
+                        }, 200)
+                    }
+                }
             }
         },
         methods: {
@@ -152,10 +166,18 @@
                 this.IS_CAMERA_MODAL_OPEN = true
                 this.startCamera()
             },
-            actionRecognize() {
-                if(this.isRecognizing) return
-                this.isRecognizing = true
+            actionOnRequest() {
+                this.speech_recognizer.stop()
+                this.isRecognizing = 2
+            },
+            actionStartRecognize() {
+                if(this.isRecognizing == 1 || this.speech_recognizer.isListening) return
                 this.speech_recognizer.start()
+                this.isRecognizing = 1
+            },
+            actionStopRecognize() {
+                this.speech_recognizer.stop()
+                this.isRecognizing = 0
             },
             loadText(text) {
                 this.speakSynthesis.text = text
@@ -164,7 +186,7 @@
                 this.synth.speak(this.speakSynthesis)
             },
             initSpritesheet() {
-                const idle_sprite = data['idle']
+                const idle_sprite = data['idle_v2']
                 let nuxtObj = this
                 const config = {
                     type: Phaser.AUTO,
@@ -189,7 +211,23 @@
                         repeat: -1 // Loop indefinitely
                     });
                     sprite.anims.play('main_sprite_1', true);
-                    document.querySelector('canvas').classList.add('avatar_canvas')
+                    document.querySelector('canvas').classList.add('avatar-canvas')
+                    if(sessionStorage.getItem("sariBody") === null || sessionStorage.getItem("sariBody") == 1) {
+                        document.querySelector('canvas').classList.add('body-grapari')
+                        sessionStorage.setItem('sariBody', 1)
+                    }
+                    else if(sessionStorage.getItem("sariBody") == 2) {
+                        document.querySelector('canvas').classList.add('body-sport')
+                        sessionStorage.setItem('sariBody', 2)
+                    }
+                    else if(sessionStorage.getItem("sariBody") == 3) {
+                        document.querySelector('canvas').classList.add('body-batik')
+                        sessionStorage.setItem('sariBody', 3)
+                    }
+                    else if(sessionStorage.getItem("sariBody") == 4) {
+                        document.querySelector('canvas').classList.add('body-casual')
+                        sessionStorage.setItem('sariBody', 4)
+                    }
                     document.querySelector('canvas').classList.add('show')
                 }
                 const game = new Phaser.Game(config)
@@ -522,9 +560,49 @@
                 document.querySelector('canvas.avatar_canvas').classList.remove("show")
             },
             async actionRequestVedita() {
+                this.actionOnRequest()
                 this.$store.dispatch('loading/actionShowLoading')
                 var result = null;
                 let data = []
+                if(this.textInput.toLowerCase().startsWith('ganti skin')) {
+                    this.$store.dispatch('loading/actionHideLoading')
+                    let sariBody = document.querySelector('canvas.avatar-canvas')
+                    this.actionStopRecognize()
+                    if(sariBody === null) return
+                    if(this.textInput.toLowerCase().startsWith('ganti skin 1')) {
+                        sariBody.classList.remove('body-grapari')
+                        sariBody.classList.remove('body-sport')
+                        sariBody.classList.remove('body-batik')
+                        sariBody.classList.remove('body-casual')
+                        sariBody.classList.add('body-grapari')
+                        sessionStorage.setItem("sariBody", 1)
+                    }
+                    else if(this.textInput.toLowerCase().startsWith('ganti skin 2')) {
+                        sariBody.classList.remove('body-grapari')
+                        sariBody.classList.remove('body-sport')
+                        sariBody.classList.remove('body-batik')
+                        sariBody.classList.remove('body-casual')
+                        sariBody.classList.add('body-sport')
+                        sessionStorage.setItem("sariBody", 2)
+                    }
+                    else if(this.textInput.toLowerCase().startsWith('ganti skin 3')) {
+                        sariBody.classList.remove('body-grapari')
+                        sariBody.classList.remove('body-sport')
+                        sariBody.classList.remove('body-batik')
+                        sariBody.classList.remove('body-casual')
+                        sariBody.classList.add('body-batik')
+                        sessionStorage.setItem("sariBody", 3)
+                    }
+                    else if(this.textInput.toLowerCase().startsWith('ganti skin 4')) {
+                        sariBody.classList.remove('body-grapari')
+                        sariBody.classList.remove('body-sport')
+                        sariBody.classList.remove('body-batik')
+                        sariBody.classList.remove('body-casual')
+                        sariBody.classList.add('body-casual')
+                        sessionStorage.setItem("sariBody", 4)
+                    }
+                    return
+                }
                 try {
                     result = await this.$axios.$get(`vedita-datacenter?text=${this.textInput.toLowerCase()}`, {
                         validateStatus: function(status) {
@@ -558,9 +636,53 @@
                     response_text = "Maaf, untuk sementara ini SARI PWA tidak dapat melakukan panggilan telepon"
                 }
 
-                if(response_text != "" && response_text != null && response_text != undefined) {
+                if(response_text != "" && response_text != null && response_text != undefined && tag != "unknown") {
                     this.loadText(response_text)
-                    this.speak()
+                    // this.speak()
+                    this.actionPlayAnim()
+                }
+                if(tag == "unknown") {
+                    this.$store.dispatch('loading/actionShowLoading')
+                    
+                    const payload = JSON.stringify({
+                        'model': "gpt-3.5-turbo",
+                        'messages': [
+                            {
+                                "role": "system", 
+                                "content": "You are a helpful assistant, you give answer as short as possible"
+                            },
+                            {
+                                "role": "user",
+                                "content": this.textInput
+                            }
+                        ]
+                    })
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${process.env.OPENAI_TOKEN}`
+                    }
+                    fetch("https://api.openai.com/v1/chat/completions", {
+                        method: 'POST',
+                        headers: headers,
+                        body: payload
+                    }).then((response) => {
+                        if(!response.ok) {
+                            throw new Error("Network response was not ok")
+                        }
+                        return response.json()
+                    })
+                    .then((result) => {
+                        const {choices} = result
+                        const message = choices[0]['message']['content']
+                        this.loadText(message)
+                        this.speak()
+                        this.actionPlayAnim()
+                        this.$store.dispatch('loading/actionHideLoading')
+                    })
+                    .catch((error) => {
+                        alert("Error occured while connecting to OpenAI API")
+                        this.$store.dispatch('loading/actionHideLoading')
+                    })
                 }
 
                 if(tag == "capture_foto") {
@@ -579,11 +701,13 @@
             window.speechSynthesis.cancel();
             this.speakSynthesis = new SpeechSynthesisUtterance()
             this.speakSynthesis.onstart = () => {
-                console.log("TESTING SAJA")
                 this.audioSynthesisTimer()
             }
             this.speakSynthesis.onend = () => {
                 clearTimeout(this.SYNTHESIS_TIMEOUT)
+                setTimeout(() => {
+                    this.actionStopRecognize()
+                }, 200)
             }
             // this.SYNTHESIS_TIMEOUT = setTimeout(this.audioSynthesisTimer, 1000)
             this.speakSynthesis.lang = 'id-ID'
@@ -606,20 +730,48 @@
                 };
 
                 this.speech_recognizer.onresult = async (event) => {
+                    // if(this.trigger_timeout != null) {
+                    //     clearTimeout(this.trigger_timeout)
+                    //     this.trigger_timeout = null
+                    // }
+                    
+                    // this.trigger_timeout = setTimeout(() => {
+                    //     console.log("Returning back to idle due to no response")
+                    //     this.status = constant.STATUS_IDLE
+                    //     this.actionStopRecognize()
+                    //     clearTimeout(this.trigger_timeout)
+                    //     this.trigger_timeout = null
+                    // }, 20000)
                     const transcript = event.results[0][0].transcript;
                     this.textInput = transcript
-                    await this.requestVedita()
-                    this.isRecognizing = false
+                    // await this.requestVedita()
+                    console.log(this.textInput)
+                    if(this.textInput != "") {
+                        this.actionOnRequest()
+                    }
+                    console.log(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE)
+                    if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {
+                        this.status = constant.STATUS_TRIGGER
+                        this.loadText("Halo juga kak, ada yang bisa saya bantu?")
+                        this.speak()
+                    }
+                    else if(this.status == constant.STATUS_TRIGGER || this.textInput.toLowerCase().trim().startsWith("ganti skin")) {
+                        this.actionRequestVedita()
+                    }
+                    else {
+                        setTimeout(() => {
+                            this.actionStopRecognize()
+                        }, 200)
+                    }
                 };
 
                 this.speech_recognizer.onend = () => {
                     console.log('Speech recognition ended');
-                    // this.actionRecognize()
-                    // this.isRecognizing = true
-                    // this.speech_recognizer.start()
+                    if(this.isRecognizing == 2) return
+                    this.actionStopRecognize()
                 };
                 this.speech_recognizer.lang = 'id-ID'
-                // this.actionRecognize()
+                this.actionStartRecognize()
             } else {
                 console.log('Speech recognition not supported in this browser.');
             }
@@ -628,13 +780,6 @@
                     console.log('OneSignal notification displayed:', event);
                 });
             });
-            // window.OneSignalDeferred = window.OneSignalDeferred || [];
-            // OneSignalDeferred.push(function(OneSignal) {
-            //     console.log("TESTING")
-            //     OneSignal.init({
-            //         appId: "ebea8143-f92d-44ab-b94f-03b09e4a6d95",
-            //     });
-            // });
         }
     }
 </script>

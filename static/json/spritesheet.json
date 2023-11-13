@@ -6,6 +6,13 @@
         "frameStart": 0,
         "frameEnd": 43
     },
+    "idle_v2": {
+        "filename": "idlev2.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 0,
+        "frameEnd": 77
+    },
     "ba": {
         "filename": "babibubeboca.webp",
         "frameWidth": 295,

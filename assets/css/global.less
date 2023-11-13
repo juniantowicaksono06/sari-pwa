@@ -3,7 +3,6 @@ html, body, #__nuxt, div#__layout {
     height: 100%;
 }
 
-
 body.grapari-bg {
     background-image: url("../../static/img/bg.webp");
     background-size: cover;
@@ -12,8 +11,23 @@ body.grapari-bg {
     background-repeat: no-repeat;
 }
 
-canvas.avatar_canvas {
+canvas.avatar-canvas.body-grapari {
     background-image: url('../../static/img/sari-body-grapari.webp');
+}
+
+canvas.avatar-canvas.body-sport {
+    background-image: url('../../static/img/sari-body-sport.webp');
+}
+
+canvas.avatar-canvas.body-batik {
+    background-image: url('../../static/img/sari-body-batik.webp');
+}
+
+canvas.avatar-canvas.body-casual {
+    background-image: url('../../static/img/sari-body-casual.webp');
+}
+
+canvas.avatar-canvas {
     background-repeat: no-repeat;
     background-position-y: 170px;
     background-position-x: -3px;
@@ -25,18 +39,18 @@ canvas.avatar_canvas {
     display: none;
 }
 
-canvas.avatar_canvas.show {
+canvas.avatar-canvas.show {
     display: block !important;
 }
 
 @media only screen and (max-width: 767px) {
-    canvas.avatar_canvas {
+    canvas.avatar-canvas {
         right: -50px;
     }
 }
 
 @media only screen and (max-width: 500px) {
-    canvas.avatar_canvas {
+    canvas.avatar-canvas {
         right: -40%;
     }
 }
