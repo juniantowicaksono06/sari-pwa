@@ -753,7 +753,8 @@
                     if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {
                         this.status = constant.STATUS_TRIGGER
                         this.loadText("Halo juga kak, ada yang bisa saya bantu?")
-                        this.speak()
+                        this.actionPlayAnim()
+                        // this.speak()
                     }
                     else if(this.status == constant.STATUS_TRIGGER || this.textInput.toLowerCase().trim().startsWith("ganti skin")) {
                         this.actionRequestVedita()
