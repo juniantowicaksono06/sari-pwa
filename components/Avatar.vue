@@ -727,6 +727,7 @@
                 // Define event handlers for the recognition process
                 this.speech_recognizer.onstart = () => {
                     console.log('Speech recognition started');
+                    alert("Speech recognition started")
                 };
 
                 this.speech_recognizer.onresult = async (event) => {
