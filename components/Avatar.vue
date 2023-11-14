@@ -6,9 +6,19 @@
         width: 100%;
         left: 0;
     }
+    #recognizeInformation {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding-left: 10px;
+    }
 </style>
 <template>
     <div class="container h-100">
+        <div id="recognizeInformation">
+            <p class="text-success" v-if="isRecognizing == 1">Listening...</p>
+            <p class="text-danger" v-if="isRecognizing == 0">Not Listening!</p>
+        </div>
         <b-modal class="modal-item" centered v-model="IS_CAMERA_MODAL_OPEN" @hide="onCameraModalClose" hide-footer size="md" hide-header>
             <h1>Camera</h1>
             <div class="w-100">
@@ -82,7 +92,7 @@
                 DEBUG_MODE: process.env.DEBUG_MODE,
                 SYNTHESIS_TIMEOUT: null,
                 status: constant.STATUS_IDLE,
-                trigger_timeout: null
+                trigger_timeout: null,
             }
         },
         watch: {
@@ -723,7 +733,6 @@
                     // Create a new SpeechRecognition object
                 // const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 this.speech_recognizer = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                alert(this.speech_recognizer)
 
                 // Define event handlers for the recognition process
                 this.speech_recognizer.onstart = () => {
