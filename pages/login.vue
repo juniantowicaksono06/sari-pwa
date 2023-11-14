@@ -48,6 +48,7 @@
                 }
                 catch(error) {
                     alert(error)
+                    window.location.href = process.env.VEDITA_API_BASE_URL
                 }
                 this.$store.dispatch('loading/actionHideLoading')
                 if (login == false) return
