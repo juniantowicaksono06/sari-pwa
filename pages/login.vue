@@ -42,8 +42,15 @@
                 let formData = new FormData()
                 formData.append('username', this.username)
                 formData.append('password', this.password)
-                let login = await this.$axios.$post('vedita-login', formData)
+                var login = false
+                try {
+                    login = await this.$axios.$post('vedita-login', formData)
+                }
+                catch(error) {
+                    alert(error)
+                }
                 this.$store.dispatch('loading/actionHideLoading')
+                if (login == false) return
                 if (login.status_code == 200) {
                     const {data} = login
                     const {token} = data
