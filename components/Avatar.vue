@@ -193,6 +193,7 @@
                 this.speakSynthesis.text = text
             },
             speak() {
+                window.speechSynthesis.cancel();
                 this.synth.speak(this.speakSynthesis)
             },
             initSpritesheet() {
@@ -530,6 +531,8 @@
                                 nuxtObj.spriteAnim = []
                                 sprite.destroy()
                                 nuxtObj.isAnimPlay = false
+                                nuxtObj.actionStopRecognize()
+                                console.log("THIS IS A TEST")
                                 return
                             }
                             sprite = spriteObj.add.sprite(295, 337, nuxtObj.selectedSprite[0])
