@@ -774,7 +774,8 @@
                 this.speech_recognizer.lang = 'id-ID'
                 this.actionStartRecognize()
             } else {
-                console.log('Speech recognition not supported in this browser.');
+                console.error('Speech recognition not supported in this browser.');
+                alert('Speech recognition not supported in this browser.');
             }
             this.$OneSignal.push(() => {
                 this.$OneSignal.on('notificationDisplay', (event) => {
