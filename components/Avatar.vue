@@ -723,11 +723,11 @@
                     // Create a new SpeechRecognition object
                 // const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 this.speech_recognizer = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                alert(this.speech_recognizer)
 
                 // Define event handlers for the recognition process
                 this.speech_recognizer.onstart = () => {
                     console.log('Speech recognition started');
-                    alert("Speech recognition started")
                 };
 
                 this.speech_recognizer.onresult = async (event) => {
