@@ -12,6 +12,25 @@
         left: 0;
         padding-left: 10px;
     }
+
+    #callDuration {
+        margin-left: 100px;
+        font-size: 24px;
+    }
+
+    #div-call-in-progress {
+        margin-left: 40px;
+    }
+
+    #modal-call-in-progress-body {
+        background-image: url('/img/user.png');
+        background-size: cover;
+    }
+
+    #modal-incomming-call-body{
+        background-image: url('/img/user.png');
+        background-size: cover;
+    }
 </style>
 <template>
     <div class="container h-100">
@@ -19,6 +38,21 @@
             <p class="text-success" v-if="isRecognizing == 1">Listening...</p>
             <p class="text-danger" v-if="isRecognizing == 0">Not Listening!</p>
         </div>
+        <b-modal class="modal-item" centered v-model="IS_DIALUP_MODAL_OPEN" @hide="onDialUpModalClose" no-close-on-backdrop hide-footer size="sm" hide-header>
+            <div class="modal-header">
+                <div id="callDuration"></div>
+            </div>
+            <div class="modal-body" id="modal-call-in-progress-body" style="height: 300px;">
+                <div class="mx-auto">
+                    <h4 id="txtPhoneNumber" style="text-align: center;">{{ phoneNumber }}</h4>
+                </div>
+            </div>
+            <div class="modal-footer mx-auto justify-content-center mt-2">
+                <button type="button" class="btn btn btn-default btn-circle btnHangUp" @click="actionHangUp()">
+                    <i class="fa fa-phone fa-2x fa-rotate-icon" aria-hidden="true" style="color: red;"></i>
+                </button>
+            </div>
+        </b-modal>
         <b-modal class="modal-item" centered v-model="IS_CAMERA_MODAL_OPEN" @hide="onCameraModalClose" hide-footer size="md" hide-header>
             <h1>Camera</h1>
             <div class="w-100">
@@ -45,24 +79,19 @@
             <video id="talkVideo" class="img-fluid" width="25%" autoplay ref="talkVideo"></video>
         </div>
         <div>
-            <!-- <select name="" id=""></select> -->
             <div id="mainInput" v-if="DEBUG_MODE == 'true'">
                 <div class="d-flex justify-content-center align-items-center mb-2">
                     <input class="form-control w-50" v-model="textInput" placeholder="Type your text...">
                 </div>
-                <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary w-50" @click="actionRequestVedita()">Speak</button>
-                </div>
-                <!-- <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button class="btn btn-primary" @click="actionPlayAnim()">Submit</button>
-                </div> -->
-                <!-- <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button class="btn btn-primary" @click="actionStartRecognize()" v-if="!isRecognizing">Record</button>
-                    <button class="btn btn-danger" v-else>Record</button>
+                <div class="d-flex justify-content-center align-items-center mb-2">
+                    <button class="btn btn-success w-50" @click="actionRequestVedita()">Request</button>
                 </div>
                 <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button class="btn btn-primary" @click="actionOpenCameraModal()">Camera</button>
-                </div> -->
+                    <button class="btn btn-primary w-50" @click="actionSpeak()">Speak</button>
+                </div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn btn-warning w-50 text-white" @click="actionCall()">Telpon</button>
+                </div>
             </div>
         </div>
     </div>
@@ -93,6 +122,10 @@
                 SYNTHESIS_TIMEOUT: null,
                 status: constant.STATUS_IDLE,
                 trigger_timeout: null,
+                IS_DIALUP_MODAL_OPEN: false,
+                TWILIO_DEVICE: null,
+                callDuration: "00:00",
+                phoneNumber: "",
             }
         },
         watch: {
@@ -107,6 +140,87 @@
             }
         },
         methods: {
+            log(message) {
+                var logDiv = document.getElementById("log");
+                logDiv.innerHTML += "<p>&gt;&nbsp;" + message + "</p>";
+                logDiv.scrollTop = logDiv.scrollHeight;
+            },
+            showCallDuration() {
+                let output = document.getElementById('callDuration');
+                let ms = 0;
+                let sec = 0;
+                let min = 0;
+
+                function timer() {
+                    ms++;
+                    if (ms >= 100) {
+                        sec++
+                        ms = 0
+                    }
+                    if (sec === 60) {
+                        min++
+                        sec = 0
+                    }
+                    if (min === 60) {
+                        ms,
+                            sec,
+                            min = 0;
+                    }
+
+                    let milli = ms < 10 ? `0` + ms : ms;
+                    let seconds = sec < 10 ? `0` + sec : sec;
+                    let minute = min < 10 ? `0` + min : min;
+
+                    let timer = `${minute}:${seconds}`;
+                    output.innerHTML = timer;
+                };
+
+                //Start timer
+                function start() {
+                    time = setInterval(timer, 10);
+                }
+
+                //stop timer
+                function stop() {
+                    clearInterval(time)
+                }
+                
+                //reset timer
+                function reset() {
+                    ms = 0;
+                    sec = 0;
+                    min = 0;
+
+                    output.innerHTML = `00:00:00`
+                }
+
+                // start the timer
+                start()
+
+                $("#modal-call-in-progress").on('hidden.bs.modal', function () {
+                    stop()
+                });
+
+            },
+            actionCall() {
+                if(this.TWILIO_DEVICE == null || this.textInput == "" || this.textInput == null || this.textInput == undefined) return
+                this.phoneNumber = this.textInput
+                this.actionBusy()
+                var outgoingConnection = this.TWILIO_DEVICE.connect({
+                    To: this.textInput
+                })
+                outgoingConnection.on("ringing", () => {
+                    console.log("Phone ringing")
+                })
+                // this.actionOpenDialUpModal()
+            },
+            actionHangUp() {
+                if(this.TWILIO_DEVICE != null) {
+                    this.TWILIO_DEVICE.disconnectAll()
+                }
+                this.actionCloseDialUpModal()
+                this.actionStopRecognize()
+            },
             actionDownloadPicture() {
                 const blob = this.dataURItoBlob(this.CAPTURED_IMAGE)
                 const downloadLink = document.createElement('a')
@@ -143,6 +257,15 @@
                 this.CAPTURED_IMAGE = null
                 this.stopCamera()
             },
+            onDialUpModalClose(event) {
+                // this.actionCloseDialUpModal()
+            },
+            actionOpenDialUpModal() {
+                this.IS_DIALUP_MODAL_OPEN = true
+            },
+            actionCloseDialUpModal() {
+                this.IS_DIALUP_MODAL_OPEN = false
+            },
             actionCloseCameraModal() {
                 this.IS_CAMERA_MODAL_OPEN = false
                 this.CAPTURED_IMAGE = null
@@ -176,7 +299,7 @@
                 this.IS_CAMERA_MODAL_OPEN = true
                 this.startCamera()
             },
-            actionOnRequest() {
+            actionBusy() {
                 this.speech_recognizer.stop()
                 this.isRecognizing = 2
             },
@@ -184,6 +307,10 @@
                 if(this.isRecognizing == 1 || this.speech_recognizer.isListening) return
                 this.speech_recognizer.start()
                 this.isRecognizing = 1
+            },
+            actionSpeak() {
+                this.loadText(this.textInput)
+                this.actionPlayAnim()
             },
             actionStopRecognize() {
                 this.speech_recognizer.stop()
@@ -573,7 +700,7 @@
                 document.querySelector('canvas.avatar_canvas').classList.remove("show")
             },
             async actionRequestVedita() {
-                this.actionOnRequest()
+                this.actionBusy()
                 this.$store.dispatch('loading/actionShowLoading')
                 var result = null;
                 let data = []
@@ -705,9 +832,67 @@
             resumeInfinity() {
                 window.speechSynthesis.resume();
                 this.SYNTHESIS_TIMEOUT = setTimeout(this.resumeInfinity, 1000);
+            },
+            getTwilioToken() {
+                fetch(`${process.env.TWILIO_WEBHOOK}/token`, {
+                    method: 'GET',
+                    headers: {
+                        "Content-Type": 'application/json'
+                    }
+                })
+                .then((response) => response.json())
+                .then((result) => {
+                    let new_data = result['data']
+                    this.TWILIO_DEVICE = new Twilio.Device(new_data.token, {
+                        // Set Opus as our preferred codec. Opus generally performs better, requiring less bandwidth and
+                        // providing better audio quality in restrained network conditions. Opus will be default in 2.0.
+                        codecPreferences: ["opus", "pcmu"],
+                        // Use fake DTMF tones client-side. Real tones are still sent to the other end of the call,
+                        // but the client-side DTMF tones are fake. This prevents the local mic capturing the DTMF tone
+                        // a second time and sending the tone twice. This will be default in 2.0.
+                        fakeLocalDTMF: true,
+                        // Use `enableRingingState` to enable the device to emit the `ringing`
+                        // state. The TwiML backend also needs to have the attribute
+                        // `answerOnBridge` also set to true in the `Dial` verb. This option
+                        // changes the behavior of the SDK to consider a call `ringing` starting
+                        // from the connection to the TwiML backend to when the recipient of
+                        // the `Dial` verb answers.
+                        enableRingingState: true,
+                        debug: true,
+                    });
+
+                    this.TWILIO_DEVICE.on("ready", (device) => {
+                        
+                        console.log("Twilio is Ready")
+                    });
+
+                    this.TWILIO_DEVICE.on("error", (error) => {
+                        alert("Error when try to make a call!")
+                    });
+
+                    this.TWILIO_DEVICE.on("connect", (conn) => {
+                        // $('#modal-call-in-progress').modal('show')
+                        this.actionOpenDialUpModal()
+                        setTimeout(() => {
+                            this.showCallDuration()
+                        }, 200)
+                    });
+
+                    this.TWILIO_DEVICE.on("disconnect", (conn) => {
+                        // $('.modal').modal('hide')
+                        this.actionCloseDialUpModal()
+                        this.TWILIO_DEVICE.disconnectAll()
+                    });
+
+                    this.TWILIO_DEVICE.on("incoming", (conn) => {
+
+                    })
+                })
             }
         },
         mounted() {
+            this.getTwilioToken()
+
             this.initSpritesheet()
             this.synth = window.speechSynthesis
             
@@ -724,7 +909,10 @@
             }
             // this.SYNTHESIS_TIMEOUT = setTimeout(this.audioSynthesisTimer, 1000)
             this.speakSynthesis.lang = 'id-ID'
-            this.speakSynthesis.rate = 0.6
+            this.speakSynthesis.rate = 0.8
+            this.speakSynthesis.addEventListener('boundary', (event) => {
+                console.log(event.charIndex)
+            })
             // this.synth.pitch = 1.1
             this.speakSynthesis.voice = this.synth.getVoices()[11]
             // this.speakSynthesis.onend = () => {
@@ -760,7 +948,7 @@
                     // await this.requestVedita()
                     console.log(this.textInput)
                     if(this.textInput != "") {
-                        this.actionOnRequest()
+                        this.actionBusy()
                     }
                     console.log(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE)
                     if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {

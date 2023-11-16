@@ -18,7 +18,8 @@ export default {
     SALT_KEY: process.env.SALT_KEY,
     DEBUG_MODE: process.env.DEBUG_MODE,
     ONESIGNAL_APPID: process.env.ONESIGNAL_APPID,
-    OPENAI_TOKEN: process.env.OPENAI_TOKEN
+    OPENAI_TOKEN: process.env.OPENAI_TOKEN,
+    TWILIO_WEBHOOK: process.env.TWILIO_WEBHOOK
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -51,6 +52,9 @@ export default {
             src: 'js/record.js', async: false,
         },
         {
+            src: 'https://media.twiliocdn.com/sdk/js/client/releases/1.8.1/twilio.min.js', async: false,
+        },
+        {
             src: 'js/jquery.slim.min.js', async: false
         },
         // {
@@ -64,6 +68,9 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '@fortawesome/fontawesome-free/css/all.min.css',
+    '@fortawesome/fontawesome-free/css/solid.min.css',
+    '@fortawesome/fontawesome-free/css/brands.min.css',
     '~assets/css/global.less'
   ],
 
