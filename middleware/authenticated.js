@@ -2,7 +2,6 @@ const CryptoJS = require("crypto-js");
 
 
 export default function ({ redirect, store, app }) {
-    console.log(process.env.SALT_KEY)
     if (app.$cookies.get('credentials')) {
         try {
             const bytes  = CryptoJS.AES.decrypt(app.$cookies.get('credentials'), process.env.SALT_KEY);
