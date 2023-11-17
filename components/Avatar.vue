@@ -79,18 +79,32 @@
             <video id="talkVideo" class="img-fluid" width="25%" autoplay ref="talkVideo"></video>
         </div>
         <div>
-            <div id="mainInput" v-if="DEBUG_MODE == 'true'">
-                <div class="d-flex justify-content-center align-items-center mb-2">
-                    <input class="form-control w-50" v-model="textInput" placeholder="Type your text...">
-                </div>
-                <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button class="btn btn-success w-50" @click="actionRequestVedita()">Request</button>
-                </div>
-                <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button class="btn btn-primary w-50" @click="actionSpeak()">Speak</button>
+            <div id="mainInput">
+                <div class="w-100 h-100" v-if="DEBUG_MODE == 'true'">
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <input class="form-control w-50" v-model="textInput" placeholder="Type your text...">
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <button class="btn btn-success w-50" @click="actionRequestVedita()">Request</button>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <button class="btn btn-primary w-50" @click="actionSpeak()">Speak</button>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <button class="btn btn-warning w-50 text-white" @click="actionCall()">Telpon</button>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-warning w-50 text-white" @click="actionCall()">Telpon</button>
+                    <button class="btn btn-primary text-white rounded-circle px-4 py-4" @click="actionStartRecognize()" v-if="!isRecognizing">
+                        <span>
+                            <i class="fa fa-microphone fa-3x"></i>
+                        </span>
+                    </button>
+                    <button class="btn btn-danger text-white rounded-circle px-4 py-4" @click="actionStopRecognize()" v-else>
+                        <span>
+                            <i class="fa fa-microphone fa-3x"></i>
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -131,11 +145,11 @@
         watch: {
             "isRecognizing": {
                 handler: function(value) {
-                    if(value == 0) {
-                        setTimeout(() => {
-                            this.actionStartRecognize()
-                        }, 200)
-                    }
+                    // if(value == 0) {
+                    //     setTimeout(() => {
+                    //         this.actionStartRecognize()
+                    //     }, 200)
+                    // }
                 }
             }
         },
@@ -146,6 +160,7 @@
                 logDiv.scrollTop = logDiv.scrollHeight;
             },
             showCallDuration() {
+                var time;
                 let output = document.getElementById('callDuration');
                 let ms = 0;
                 let sec = 0;
@@ -202,12 +217,43 @@
                 });
 
             },
-            actionCall() {
-                if(this.TWILIO_DEVICE == null || this.textInput == "" || this.textInput == null || this.textInput == undefined) return
-                this.phoneNumber = this.textInput
+            actionCall(phoneNumber = "") {
+                phoneNumber = phoneNumber.trim()
+                if(phoneNumber == "") {
+                    return
+                }
+                else {
+                    if(this.TWILIO_DEVICE == null || this.textInput == "" || this.textInput == null || this.textInput == undefined) return
+                    if(phoneNumber == "" && this.textInput != "") {
+                        phoneNumber = this.textInput
+                    }
+                    console.log("Nomor Telpon:", phoneNumber)
+                }
+                this.phoneNumber = phoneNumber.trim()
+                if(!this.phoneNumber.startsWith('+')) {
+                    if(this.phoneNumber.startsWith('62')) {
+                        this.phoneNumber = `+${this.phoneNumber}`
+                    }
+                    else if(this.phoneNumber.startsWith("8")) {
+                        this.phoneNumber = this.phoneNumber.substring(1)
+                        this.phoneNumber = `+62${this.phoneNumber}`
+                    }
+                    else if( this.phoneNumber.startsWith('08')) {
+                        this.phoneNumber = this.phoneNumber.slice(1, this.phoneNumber.split('').length)
+                        this.phoneNumber = `+62${this.phoneNumber}`
+                    }
+                }
+                else if(this.phoneNumber.startsWith("08")) {
+                    this.phoneNumber = this.phoneNumber.slice(1, this.phoneNumber.split('').length)
+                    this.phoneNumber = `+62${this.phoneNumber}`
+                }
+                if(!this.phoneNumber.startsWith('+62') && !this.phoneNumber.startsWith('08')) {
+                    alert("Nomor HP tidak valid")
+                    return
+                }
                 this.actionBusy()
                 var outgoingConnection = this.TWILIO_DEVICE.connect({
-                    To: this.textInput
+                    To: this.phoneNumber
                 })
                 outgoingConnection.on("ringing", () => {
                     console.log("Phone ringing")
@@ -447,7 +493,7 @@
                 const objectURL = URL.createObjectURL(blob)
                 return objectURL
             },
-            async actionPlayAnim() {
+            async actionPlayAnim(fn = null) {
                 if(this.isAnimPlay || this.speakSynthesis.text == "") return
                 this.isAnimPlay = true
                 const syllables = this.getSyllables()
@@ -651,6 +697,11 @@
                         // Play the next spritesheet
                         function playNext() {
                             if(nuxtObj.selectedSprite.length <= 0 || nuxtObj.selectedSprite.length == 1) {
+                                if(fn != null) {
+                                    if(typeof fn == "function") {
+                                        fn()
+                                    }
+                                }
                                 nuxtObj.Game.scene.remove('speak')
                                 nuxtObj.spriteAnim.forEach((value) => {
                                     nuxtObj.Game.anims.remove(value)
@@ -659,7 +710,6 @@
                                 sprite.destroy()
                                 nuxtObj.isAnimPlay = false
                                 nuxtObj.actionStopRecognize()
-                                console.log("THIS IS A TEST")
                                 return
                             }
                             sprite = spriteObj.add.sprite(295, 337, nuxtObj.selectedSprite[0])
@@ -771,16 +821,25 @@
                 const {tag} = data
                 let response_text = data['response_text']
                 console.log(response_text)
+                var contact = {}
                 
                 if(tag == "telpon") {
-                    response_text = "Maaf, untuk sementara ini SARI PWA tidak dapat melakukan panggilan telepon"
+                    contact = data['contact']
+                    // response_text = "Maaf, untuk sementara ini SARI PWA tidak dapat melakukan panggilan telepon"
+                    response_text = `Baik kak saya akan telpon ${contact['name']}`
                 }
 
                 if(response_text != "" && response_text != null && response_text != undefined && tag != "unknown") {
                     this.loadText(response_text)
-                    // this.speak()
-                    this.actionPlayAnim()
+                    var fn = null
+                    if(tag == "telpon") {
+                        fn = () => {
+                            this.actionCall(contact['phone'])
+                        }
+                    }
+                    this.actionPlayAnim(fn)
                 }
+
                 if(tag == "unknown") {
                     this.$store.dispatch('loading/actionShowLoading')
                     
@@ -973,7 +1032,6 @@
                     this.actionStopRecognize()
                 };
                 this.speech_recognizer.lang = 'id-ID'
-                this.actionStartRecognize()
             } else {
                 console.error('Speech recognition not supported in this browser.');
                 alert('Speech recognition not supported in this browser.');
