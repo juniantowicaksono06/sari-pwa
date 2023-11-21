@@ -1,11 +1,4 @@
 {
-    "idle": {
-        "filename": "idle.webp",
-        "frameWidth": 295,
-        "frameHeight": 337,
-        "frameStart": 0,
-        "frameEnd": 43
-    },
     "idle_v2": {
         "filename": "idlev2.webp",
         "frameWidth": 295,
@@ -49,39 +42,39 @@
         "frameEnd": 76
     },
     "ca": {
-        "filename": "babibubeboca.webp",
-        "frameWidth": 295,
-        "frameHeight": 337,
-        "frameStart": 77,
-        "frameEnd": 90
-    },
-    "ci": {
-        "filename": "cicucecodadi.webp",
+        "filename": "cacicuceco.webp",
         "frameWidth": 295,
         "frameHeight": 337,
         "frameStart": 0,
-        "frameEnd": 14
+        "frameEnd": 17
+    },
+    "ci": {
+        "filename": "cacicuceco.webp",
+        "frameWidth": 295,
+        "frameHeight": 337,
+        "frameStart": 18,
+        "frameEnd": 32
     },
     "cu": {
-        "filename": "cicucecodadi.webp",
+        "filename": "cacicuceco.webp",
         "frameWidth": 295,
         "frameHeight": 337,
-        "frameStart": 15,
-        "frameEnd": 34
+        "frameStart": 33,
+        "frameEnd": 51
     },
     "ce": {
-        "filename": "cicucecodadi.webp",
+        "filename": "cacicuceco.webp",
         "frameWidth": 295,
         "frameHeight": 337,
-        "frameStart": 35,
-        "frameEnd": 44
+        "frameStart": 52,
+        "frameEnd": 63
     },
     "co": {
-        "filename": "cicucecodadi.webp",
+        "filename": "cacicuceco.webp",
         "frameWidth": 295,
         "frameHeight": 337,
-        "frameStart": 45,
-        "frameEnd": 61
+        "frameStart": 64,
+        "frameEnd": 79
     },
     "da": {
         "filename": "cicucecodadi.webp",

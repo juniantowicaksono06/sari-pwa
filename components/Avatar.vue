@@ -90,9 +90,9 @@
                     <div class="d-flex justify-content-center align-items-center mb-2">
                         <button class="btn btn-primary w-50" @click="actionSpeak()">Speak</button>
                     </div>
-                    <div class="d-flex justify-content-center align-items-center mb-2">
+                    <!-- <div class="d-flex justify-content-center align-items-center mb-2">
                         <button class="btn btn-warning w-50 text-white" @click="actionCall()">Telpon</button>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="d-flex justify-content-center align-items-center">
                     <button class="btn btn-primary text-white rounded-circle px-4 py-4" @click="actionStartRecognize()" v-if="!isRecognizing">
@@ -356,7 +356,7 @@
             },
             actionSpeak() {
                 this.loadText(this.textInput)
-                this.actionPlayAnim()
+                this.actionPlayAnimV2()
             },
             actionStopRecognize() {
                 this.speech_recognizer.stop()
@@ -367,6 +367,9 @@
             },
             speak() {
                 window.speechSynthesis.cancel();
+                this.speakSynthesis.addEventListener('boundary', function(event) {
+                    console.log(event)
+                })
                 this.synth.speak(this.speakSynthesis)
             },
             initSpritesheet() {
@@ -388,6 +391,7 @@
                 function create() {
                     nuxtObj.phaserObj = this
                     const sprite = this.add.sprite(295, 337, 'main_sprite');
+                    console.log(this)
                     this.anims.create({
                         key: 'main_sprite_1',
                         frames: this.anims.generateFrameNumbers('main_sprite', { start: idle_sprite['frameStart'], end: idle_sprite['frameEnd'] }),
@@ -417,9 +421,10 @@
                 const game = new Phaser.Game(config)
                 this.Game = game
             },
-            getSyllables() {
-                if(this.speakSynthesis.text == "") return false
-                let inputText = this.speakSynthesis.text
+            getSyllables(text) {
+                if(text == "" || text == null) return
+                // if(this.speakSynthesis.text == "") return false
+                let inputText = text
                 let words = inputText.split(' ')
                 const vowels = ['A', 'I', 'U', 'E', 'O']
                 const syllables = []
@@ -493,33 +498,242 @@
                 const objectURL = URL.createObjectURL(blob)
                 return objectURL
             },
+            async actionPlayAnimV2(fn = null) {
+                if(this.isAnimPlay || this.speakSynthesis.text == "") return
+                this.isAnimPlay = true
+                let nuxtObj = this
+                const payload = new FormData()
+                payload.set('text', this.speakSynthesis.text)
+                payload.set('language', "ID")
+                var tts = null
+                try {
+                    const result = await this.$axios.$post('vedita-tts', payload)
+                    tts = result['data']['audio_b64']
+                    const audio = this.convertB64ToMp3(tts)
+                    this.$refs.audioPlayer.src = audio
+                } catch (error) {
+                    console.error(error)
+                    alert("Error occured while generating TTS!")
+                    return
+                }
+                let text_split = this.speakSynthesis.text.split(' ')
+                const ListScene = []
+                var current_sprite = []
+                var current_anim = []
+                text_split.forEach(async (value) => {
+                    const syllables = this.getSyllables(value)
+                    var tmp_sprite = []
+                    var tmp_anim = []
+                    syllables.forEach((list) => {
+                        if(list.length > 0) {
+                            list.forEach((value) => {
+                                let v = value.toLowerCase()
+                                if(v == "va") {
+                                    v = "fa"
+                                }
+                                if(v == "vi") {
+                                    v = "fi"
+                                }
+                                if(v == "ve") {
+                                    v = "fe"
+                                }
+                                if(v == "vo") {
+                                    v = "fo"
+                                }
+                                if( v== "ma" || v == "pa") {
+                                    v = "ba"
+                                }
+                                if( v== "mi" || v == "pi") {
+                                    v = "bi"
+                                }
+                                if( v== "ngi") {
+                                    v = "i"
+                                }
+                                if( v== "mu" || v == "pu") {
+                                    v = "bu"
+                                }
+                                if( v== "me" || v == "pe") {
+                                    v = "be"
+                                }
+                                if( v== "mo" || v == "po") {
+                                    v = "bo"
+                                }
+                                if(
+                                    v == "da" || 
+                                    v == "ga" || 
+                                    v == "ha" || 
+                                    v == "ja" || 
+                                    v == "ka" || 
+                                    v == "na" || 
+                                    v == "qa" || 
+                                    v == "sa" || 
+                                    v == "xa" || 
+                                    v == "ya" || 
+                                    v == "za"
+                                ) {
+                                    v = "ca"
+                                }
+                                if(
+                                    v == "di" ||
+                                    v == "gi" ||
+                                    v == "hi" ||
+                                    v == "ji" ||
+                                    v == "ki" ||
+                                    v == "ni" ||
+                                    v == "qi" ||
+                                    v == "si" ||
+                                    v == "xi" ||
+                                    v == "yi" ||
+                                    v == "zi" 
+                                ) {
+                                    v = "ci"
+                                }
+                                if(
+                                    v == "du" ||
+                                    v == "gu" ||
+                                    v == "hu" ||
+                                    v == "ju" ||
+                                    v == "ku" ||
+                                    v == "nu" ||
+                                    v == "qu" ||
+                                    v == "su" ||
+                                    v == "xu" ||
+                                    v == "yu" ||
+                                    v == "zu" ||
+                                    v == "ru" ||
+                                    v == "tu" ||
+                                    v == "fu" ||
+                                    v == "vu" ||
+                                    v == "lu" ||
+                                    v == "wu"
+                                ) {
+                                    v = "cu"
+                                }
+                                if(
+                                    v == "de" ||
+                                    v == "ge" ||
+                                    v == "he" ||
+                                    v == "je" ||
+                                    v == "ke" ||
+                                    v == "ne" ||
+                                    v == "qe" ||
+                                    v == "se" ||
+                                    v == "xe" ||
+                                    v == "ye" ||
+                                    v == "ze"
+                                ) {
+                                    v = "ce"
+                                }
+                                if(
+                                    v == "do" ||
+                                    v == "go" ||
+                                    v == "ho" ||
+                                    v == "jo" ||
+                                    v == "ko" ||
+                                    v == "no" ||
+                                    v == "qo" ||
+                                    v == "so" ||
+                                    v == "xo" ||
+                                    v == "yo" ||
+                                    v == "zo" ||
+                                    v == "ro" ||
+                                    v == "to"
+                                ) {
+                                    v = "co"
+                                }
+                                if(v == "te") {
+                                    v = "re"
+                                }
+                                if(v == "ta") {
+                                    v = "ra"
+                                }
+                                if(v == "ti" || v == "ty") {
+                                    v = "ri"
+                                }
+                                if(v == "py") {
+                                    v = "by"
+                                }
+                                if(v == "shy" || v == "xy") {
+                                    v = "cy"
+                                }
+                                if(v == "vy" || v == "fly") {
+                                    v = "fy"
+                                }
+                                if(v == "ky") {
+                                    v = "gy"
+                                }
+                                tmp_sprite.push(v)
+                                tmp_anim.push(v)
+                            })
+                        }
+                    })
+                    current_anim.push(tmp_anim)
+                    current_sprite.push(tmp_sprite)
+                })
+                console.log(current_anim)
+                
+                class LoadSprite extends Phaser.Scene {
+                    constructor() {
+                        super({
+                            key: "speak"
+                        })
+                    }
+                    preload() {
+                        const already_imported = []
+                        current_anim.forEach((arr_anim) => {
+                            if(arr_anim.length <= 0) return
+                            arr_anim.forEach((sprite_name) => {
+                                if(already_imported.includes(sprite_name)) return
+                                this.load.spritesheet(sprite_name, `img/spritesheets/${data[sprite_name]['filename']}`, { frameWidth: data[sprite_name]['frameWidth'], frameHeight: data[sprite_name]['frameHeight'] });
+                                already_imported.push(sprite_name)
+                            })
+                        })
+                    }
+                    create() {
+                        let sprite = null
+                        let all_animation = []
+                        current_anim.forEach((arr_anim, word_index) => {
+                            if(arr_anim.length <= 0) return
+                            arr_anim.forEach((sprite_name, sprite_index) => {
+                                // if(word_index == 0) {
+                                sprite = this.add.sprite(295, 337, sprite_name)
+                                // }
+                                let animationName = `play-${word_index}-${sprite_name}-${sprite_index}`
+                                all_animation.push(animationName)
+                                if(!this.anims.exists(animationName)) {
+                                    this.anims.create({
+                                        key: animationName,
+                                        frames: this.anims.generateFrameNumbers(sprite_name, { start: data[sprite_name]['frameStart'], end: data[sprite_name]['frameEnd'] }),
+                                        frameRate: 53,
+                                    })
+                                }
+                            })
+                        }) 
+                        nuxtObj.$refs.audioPlayer.play()
+                        console.log(this.anims)
+                        sprite.anims.play(all_animation.shift())
+                        sprite.on('animationcomplete', () => {
+                            if(all_animation.length == 0) {
+                                nuxtObj.Game.scene.remove('speak')
+                                sprite.destroy()
+                                nuxtObj.isAnimPlay = false
+                                nuxtObj.actionStopRecognize()
+                                return
+                            }
+                            sprite.anims.play(all_animation.shift())
+                        })
+                    }
+                }
+                this.Game.scene.add('speak', LoadSprite)
+                setTimeout(() => {
+                    this.Game.scene.start('speak')
+                }, 550)
+            },
             async actionPlayAnim(fn = null) {
                 if(this.isAnimPlay || this.speakSynthesis.text == "") return
                 this.isAnimPlay = true
                 const syllables = this.getSyllables()
                 let nuxtObj = this
-
-                // let formData = new FormData()
-                // formData.append('text', this.textInput)
-                // formData.append('language', "ID")
-                // formData.append('audio_provider', 'microsoft')
-                // formData.append('audio_voice_id', 'id-ID-GadisNeural')
-                // var audio_request = null;
-                // try {
-                //     let audio_request = await this.$axios.$post('vedita-tts', formData)
-                //     if(audio_request['status_code'] == 200) {
-                //         const { audio_b64 } = audio_request['data']
-                //         const objectURL = this.convertB64ToMp3(audio_b64)
-                //         this.loadAudio(objectURL)
-                //     }
-                // }
-                // catch(error) {
-                //     audio_request = false
-                // }
-                // if(audio_request == false) {
-                //     alert("Error")
-                //     return
-                // }
                 syllables.forEach((list) => {
                     if(list.length > 0) {
                         list.forEach((value) => {
@@ -672,7 +886,6 @@
                     }
                     preload() {
                         nuxtObj.selectedSprite.forEach((value) => {
-                            console.log(value)
                             this.load.spritesheet(value, `img/spritesheets/${data[value]['filename']}`, { frameWidth: data[value]['frameWidth'], frameHeight: data[value]['frameHeight'] });
                         })  
                     }
@@ -957,6 +1170,7 @@
             
             window.speechSynthesis.cancel();
             this.speakSynthesis = new SpeechSynthesisUtterance()
+            console.log(this.speakSynthesis)
             this.speakSynthesis.onstart = () => {
                 this.audioSynthesisTimer()
             }
@@ -1005,25 +1219,24 @@
                     const transcript = event.results[0][0].transcript;
                     this.textInput = transcript
                     // await this.requestVedita()
-                    console.log(this.textInput)
                     if(this.textInput != "") {
                         this.actionBusy()
                     }
-                    console.log(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE)
-                    if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {
-                        this.status = constant.STATUS_TRIGGER
-                        this.loadText("Halo juga kak, ada yang bisa saya bantu?")
-                        this.actionPlayAnim()
-                        // this.speak()
-                    }
-                    else if(this.status == constant.STATUS_TRIGGER || this.textInput.toLowerCase().trim().startsWith("ganti skin")) {
+                    // if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {
+                    //     this.status = constant.STATUS_TRIGGER
+                    //     this.loadText("Halo juga kak, ada yang bisa saya bantu?")
+                    //     this.actionPlayAnim()
+                    //     // this.speak()
+                    // }
+                    // else if(this.status == constant.STATUS_TRIGGER || this.textInput.toLowerCase().trim().startsWith("ganti skin")) {
+                    if(this.status == constant.STATUS_TRIGGER || this.textInput.toLowerCase().trim().startsWith("ganti skin")) {
                         this.actionRequestVedita()
                     }
-                    else {
-                        setTimeout(() => {
-                            this.actionStopRecognize()
-                        }, 200)
-                    }
+                    // else {
+                    // }
+                    setTimeout(() => {
+                        this.actionStopRecognize()
+                    }, 200)
                 };
 
                 this.speech_recognizer.onend = () => {
