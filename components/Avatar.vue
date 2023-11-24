@@ -134,7 +134,7 @@
                 CAPTURED_IMAGE: null,
                 DEBUG_MODE: process.env.DEBUG_MODE,
                 SYNTHESIS_TIMEOUT: null,
-                status: constant.STATUS_IDLE,
+                status: constant.STATUS_TRIGGER,
                 trigger_timeout: null,
                 IS_DIALUP_MODAL_OPEN: false,
                 TWILIO_DEVICE: null,
@@ -1009,14 +1009,13 @@
                     if(this.textInput != "") {
                         this.actionBusy()
                     }
-                    console.log(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE)
-                    if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {
-                        this.status = constant.STATUS_TRIGGER
-                        this.loadText("Halo juga kak, ada yang bisa saya bantu?")
-                        this.actionPlayAnim()
-                        // this.speak()
-                    }
-                    else if(this.status == constant.STATUS_TRIGGER || this.textInput.toLowerCase().trim().startsWith("ganti skin")) {
+                    // if(this.textInput.toLowerCase().trim() == 'halo sari' && this.status == constant.STATUS_IDLE) {
+                    //     this.status = constant.STATUS_TRIGGER
+                    //     this.loadText("Halo juga kak, ada yang bisa saya bantu?")
+                    //     this.actionPlayAnim()
+                    //     // this.speak()
+                    // }
+                    if(this.status == constant.STATUS_TRIGGER) {
                         this.actionRequestVedita()
                     }
                     else {
