@@ -74,13 +74,14 @@
                 <button class="btn btn-danger" @click="actionCloseCameraModal()">Close</button>
             </div>
         </b-modal>
-        <div class="d-flex justify-content-center align-items-end w-100 h-100 d-none">
+        <div class="d-flex justify-content-center align-items-start w-100 h-100 d-none">
             <audio id="audioPlayer"  src="" class="d-none" ref="audioPlayer"></audio>
-            <video id="talkVideo" class="img-fluid" width="25%" autoplay ref="talkVideo"></video>
+            <video id="talkVideo" class="img-fluid" controls autoplay ref="talkVideo" style="position: fixed; top: -2000010px; visibility: hidden;"></video>
+            <img ref="img_source" src="img/sari_tes_head.png" alt="SARI GRAPARI 4" class="img-fluid" style="position: absolute; top: 10px; right: 10px;" />
         </div>
         <div>
             <div id="mainInput">
-                <div class="w-100 h-100" v-if="DEBUG_MODE == 'true'">
+                <div class="w-100 h-100" v-if="DEBUG_MODE == 'true'" style="position: relative; z-index: 99999;">
                     <div class="d-flex justify-content-center align-items-center mb-2">
                         <input class="form-control w-50" v-model="textInput" placeholder="Type your text...">
                     </div>
@@ -88,7 +89,7 @@
                         <button class="btn btn-success w-50" @click="actionRequestVedita()">Request</button>
                     </div>
                     <div class="d-flex justify-content-center align-items-center mb-2">
-                        <button class="btn btn-primary w-50" @click="actionSpeak()">Speak</button>
+                        <button class="btn btn-primary w-50" @click="actionStartStream()">Speak</button>
                     </div>
                     <div class="d-flex justify-content-center align-items-center mb-2">
                         <button class="btn btn-warning w-50 text-white" @click="actionCall()">Telpon</button>
@@ -106,6 +107,8 @@
                         </span>
                     </button>
                 </div>
+                <canvas id="myCanvas" ref="myCanvas" class="talking-avatar" style="position: fixed; bottom: 10px; right: 48%; transform: scaleX(0.65) scaleY(1.06);" width="512" height="512"></canvas>
+                <canvas id="ca" ref="ca" class="talking-avatar" style="position: fixed; top: 10px; left: 10px;" width="512" height="512"></canvas>
             </div>
         </div>
     </div>
@@ -124,7 +127,7 @@
                 selectedSprite: [],
                 spriteAnim: [],
                 phaserObj: null,
-                isAnimPlay: false,
+                // isAnimPlay: false,
                 synth: null,
                 speakSynthesis: null,
                 speech_recognizer: null,
@@ -140,9 +143,26 @@
                 TWILIO_DEVICE: null,
                 callDuration: "00:00",
                 phoneNumber: "",
+                streamId: "",
+                sessionId: "",
+                peerConnection: null,
+                videoIsPlaying: false,
+                lastBytesReceived: 0,
+                status: 0,
             }
         },
         watch: {
+            // "isAnimPlay": {
+            //     handler: function(value) {
+            //         console.log(value)
+            //         if(value == true) {
+            //             document.querySelector('canvas:not(.talking-avatar)').classList.add('show')
+            //         }
+            //         else {
+            //             document.querySelector('canvas:not(.talking-avatar)').classList.remove('show')
+            //         }
+            //     }
+            // },
             "isRecognizing": {
                 handler: function(value) {
                     // if(value == 0) {
@@ -395,24 +415,24 @@
                         repeat: -1 // Loop indefinitely
                     });
                     sprite.anims.play('main_sprite_1', true);
-                    document.querySelector('canvas').classList.add('avatar-canvas')
+                    document.querySelector('canvas:not(.talking-avatar)').classList.add('avatar-canvas')
                     if(sessionStorage.getItem("sariBody") === null || sessionStorage.getItem("sariBody") == 1) {
-                        document.querySelector('canvas').classList.add('body-grapari')
+                        document.querySelector('canvas:not(.talking-avatar)').classList.add('body-grapari')
                         sessionStorage.setItem('sariBody', 1)
                     }
                     else if(sessionStorage.getItem("sariBody") == 2) {
-                        document.querySelector('canvas').classList.add('body-sport')
+                        document.querySelector('canvas:not(.talking-avatar)').classList.add('body-sport')
                         sessionStorage.setItem('sariBody', 2)
                     }
                     else if(sessionStorage.getItem("sariBody") == 3) {
-                        document.querySelector('canvas').classList.add('body-batik')
+                        document.querySelector('canvas:not(.talking-avatar)').classList.add('body-batik')
                         sessionStorage.setItem('sariBody', 3)
                     }
                     else if(sessionStorage.getItem("sariBody") == 4) {
-                        document.querySelector('canvas').classList.add('body-casual')
+                        document.querySelector('canvas:not(.talking-avatar)').classList.add('body-casual')
                         sessionStorage.setItem('sariBody', 4)
                     }
-                    document.querySelector('canvas').classList.add('show')
+                    document.querySelector('canvas:not(.talking-avatar)').classList.add('show')
                 }
                 const game = new Phaser.Game(config)
                 this.Game = game
@@ -947,12 +967,418 @@
 
                     })
                 })
+            },
+            async startWebRTCSession() {
+                console.log("Starting WebRTC Session to D-ID")
+                // const sessionRequest = await this.$axios.$post(`https://api.d-id.com/talks/streams`, JSON.stringify({
+                //     source_url: 'https://raw.githubusercontent.com/juniantowicaksono06/sari-store-img/main/sari_grapari2.png'
+                // }), {
+                //     headers: {
+                //     'Content-Type': 'application/json',
+                //     'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                //             'Accept': 'application/json'
+                //     }
+                // })
+                let sessionRequest = await fetch("https://api.d-id.com/talks/streams", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        source_url: 'https://raw.githubusercontent.com/juniantowicaksono06/sari-store-img/main/sari_greenscreen.png'
+                    })
+                })
+                if(!sessionRequest.ok) {
+                    sessionRequest = false
+                    return
+                }
+                sessionRequest = await sessionRequest.json()
+                this.sessionId = sessionRequest['session_id']
+                this.streamId = sessionRequest['id']
+                const sessionClientAnswer = await this.createPeerConnection(sessionRequest['offer'], sessionRequest['ice_servers'])
+                await fetch(`https://api.d-id.com/talks/streams/${this.streamId}/sdp`,{
+                    method: "POST",
+                    headers: {
+                        'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        answer: sessionClientAnswer,
+                        session_id: this.sessionId,
+                    })
+                })
+                // const sdpResponse = await this.$axios.$post(`https://api.d-id.com/talks/streams/${this.streamId}/sdp`, JSON.stringify({
+                //     answer: sessionClientAnswer,
+                //     session_id: this.sessionId,
+                // }), 
+                // {
+                //     headers: {
+                //         'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                //         'Content-Type': 'application/json',
+                //         'Accept': 'application/json'
+                //     }
+                // });
+            },
+            async createPeerConnection(offer, iceServers) {
+                this.peerConnection = new RTCPeerConnection({ iceServers });
+                // if (!peerConnection) {
+                    // Here we add event listeners for any events we want to handle
+                // peerConnection.addEventListener('icegatheringstatechange', onIceGatheringStateChange, true);
+                this.peerConnection.addEventListener('icecandidate', this.onIceCandidate, true);
+                // peerConnection.addEventListener('iceconnectionstatechange', onIceConnectionStateChange, true);
+                // peerConnection.addEventListener('connectionstatechange', onConnectionStateChange, true);
+                // peerConnection.addEventListener('signalingstatechange', onSignalingStateChange, true);
+                this.peerConnection.addEventListener('track', this.onTrack, true);
+                // // }
+                console.log(offer)
+                await this.peerConnection.setRemoteDescription(offer);
+                const sessionClientAnswer = await this.peerConnection.createAnswer();
+                await this.peerConnection.setLocalDescription(sessionClientAnswer);
+
+                return sessionClientAnswer;
+            },
+            async getVideo(id) {
+                // let talks = await this.$axios.$get(`https://api.d-id.com/talks/${id}`, {
+                //     headers: {
+                //         'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                //     }
+                // })
+                let talks = await fetch(`https://api.d-id.com/talks/${id}`, {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                    }
+                })
+                if(!talks.ok) return false
+                return await talks.json()
+            },
+            async sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+            stopWebRTCSession() {
+                const streamId = this.streamId
+                const sessionId = this.sessionId
+                // await this.$axios.$post(`https://api.d-id.com/talks/streams/${streamId}`, JSON.stringify({ session_id: sessionId }), {
+                //     headers: {
+                //         'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                //         'Content-Type': 'application/json',
+                //     }
+                // });
+                fetch(`https://api.d-id.com/talks/streams/${streamId}`, {
+                    method: "POST",
+                    headers: {
+                        'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ session_id: sessionId })
+                });
+            },
+            async playAnimation() {
+                if(this.textInput == "") return
+                const payload = {
+                    "script": {
+                        "type": "text",
+                        "subtitles": "false",
+                        "provider": {
+                        "type": "microsoft",
+                        "voice_id": "id-ID-GadisNeural"
+                        },
+                        "ssml": "false",
+                        "input": this.textInput
+                    },
+                    "config": {
+                        "fluent": "false",
+                        "pad_audio": "0.0",
+                        "result_format": "mp4",
+                        "sharpen": true,
+                        "stitch": true
+                    },
+                    "persist": false,
+                    "source_url": "https://raw.githubusercontent.com/juniantowicaksono06/sari-store-img/main/sari_grapari2.png"
+                }
+                this.textInput = ''
+                // let result = await this.$axios.$post('https://api.d-id.com/talks', JSON.stringify(payload), {
+                //     headers: {
+                //         'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                //         'Content-Type': 'application/json',
+                //         'Accept': 'application/json'
+                //     }
+                // })
+                let result = await fetch('https://api.d-id.com/talks', {
+                    method: "POST",
+                    headers: {
+                        'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                if(!result.ok) return false
+                result = await result.json()
+                let video_id = result['id']
+                let talks;
+                let limit = 15;
+                let tries = 0;
+                while(true) {
+                    talks = await this.getVideo(video_id)
+                    console.log(talks)
+                    if("result_url" in talks || tries > limit) {
+                        break
+                    }
+                    await this.sleep(1000)
+                    tries += 1
+                }
+
+
+                this.$refs.talkVideo.addEventListener('loadeddata', () => {
+                    this.status = 1
+                    this.$refs.talkVideo.play()
+                })
+
+                this.$refs.talkVideo.src = talks['result_url']
+            },
+            async actionStartStream() {
+                const streamId = this.streamId
+                const sessionId = this.sessionId
+                const textInput = this.textInput
+                this.$store.dispatch('loading/actionShowLoading')
+                const payload = JSON.stringify(
+                    {
+                        "script": {
+                            "type": "text",
+                            "subtitles": "false",
+                            "provider": {
+                                "type": "microsoft",
+                                "voice_id": "id-ID-GadisNeural",
+                                "voice_name": "SARI",
+                                "voice_language": "ID"
+                            },
+                            "ssml": "false",
+                            "input": textInput
+                        },
+                        "config": {
+                            "fluent": "false",
+                            "pad_audio": "0.0",
+                            "stitch": true,
+                            "sharpen": true,
+                            "result_format": "mp4"
+                        },
+                        "session_id": sessionId,
+                        "name": "SARI_TES1"
+                    }
+                )
+                // this.$axios.$post(`https://api.d-id.com/talks/streams/${streamId}`, payload, {
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Accept': 'application/json',
+                //         'Authorization': `Basic ${process.env.DID_API_KEY}`
+                //     }
+                // })
+                await fetch(`https://api.d-id.com/talks/streams/${streamId}`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Basic ${process.env.DID_API_KEY}`
+                    },
+                    body: payload
+                })
+                
+                this.textInput = ""
+            },
+            async onTrack(event) {
+                setInterval(async () => {
+                    const stats = await this.peerConnection.getStats(event.track);
+                    stats.forEach((report) => {
+                        if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
+                            const videoStatusChanged = this.videoIsPlaying !== report.bytesReceived > this.lastBytesReceived;
+
+                            if (videoStatusChanged) {
+                            this.videoIsPlaying = report.bytesReceived > this.lastBytesReceived;
+                                this.onVideoStatusChange(this.videoIsPlaying, event.streams[0]);
+                            }
+                            this.lastBytesReceived = report.bytesReceived;
+                        }
+                    });
+                }, 500);
+            },
+            onVideoStatusChange(videoIsPlaying, stream) {
+                let status;
+                if (videoIsPlaying) {
+                    document.querySelector('canvas#myCanvas').classList.add('d-block')
+                    document.querySelector('canvas#myCanvas').classList.remove('d-none')
+                    // this.isAnimPlay = true
+                    status = 'streaming';
+                    const remoteStream = stream;
+                    this.setVideoElement(remoteStream);
+                    document.querySelector('canvas:not(.talking-avatar)').classList.remove('show')
+                } else {
+                    status = 'empty';
+                    // this.isAnimPlay = false
+                    this.$refs.talkVideo.srcObject = undefined;
+                    // document.querySelector('canvas:not(.talking-avatar)').classList.add('show')
+                    // document.querySelector('canvas#myCanvas').classList.add('d-none')
+                    // document.querySelector('canvas#myCanvas').classList.remove('d-block')
+                    // this.status = 0
+                }
+            },
+            setVideoElement(stream) {
+                this.$store.dispatch('loading/actionHideLoading')
+                if (!stream) return;
+                this.$refs.talkVideo.srcObject = stream;
+                this.status = 1
+                this.$refs.talkVideo.play()
+                this.$refs.talkVideo.loop = false;
+
+                // safari hotfix
+                if (this.$refs.talkVideo.paused) {
+                    this.$refs.talkVideo
+                    .play()
+                    .then((_) => {})
+                    .catch((e) => {});
+                }
+            },
+            onIceCandidate(event) {
+                if (event.candidate) {
+                    const { candidate, sdpMid, sdpMLineIndex } = event.candidate;
+                    // this.$axios.$post(`https://api.d-id.com/talks/streams/${this.streamId}/ice`, JSON.stringify({
+                    //     candidate,
+                    //     sdpMid,
+                    //     sdpMLineIndex,
+                    //     session_id: this.sessionId
+                    // }), 
+                    // {
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                    //         'Accept': 'application/json'
+                    //     }
+                    // })
+                    fetch(`https://api.d-id.com/talks/streams/${this.streamId}/ice`, 
+                    {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Basic ${process.env.DID_API_KEY}`,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            candidate,
+                            sdpMid,
+                            sdpMLineIndex,
+                            session_id: this.sessionId
+                        })
+                    })
+                }
+            },
+            clearGreenScreen() {
+                var ctx = this.$refs.myCanvas.getContext('2d')
+                var obj = this
+                function drawVid() {
+                    ctx.drawImage(obj.$refs.talkVideo, 0, 0, obj.$refs.talkVideo.offsetWidth, obj.$refs.talkVideo.offsetHeight)
+                    var frames = ctx.getImageData(0, 0, obj.$refs.talkVideo.offsetWidth, obj.$refs.talkVideo.offsetHeight)
+                    for(var i = 0; i < frames.data.length; i += 4) {
+                        let r = frames.data[i]
+                        let g = frames.data[i + 1]
+                        let b = frames.data[i + 2]
+                        if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 30 && r < 80) && (g > 100 && g < 140) && (b > 35 && b < 90))) {
+                            frames.data[i + 3] = 0
+                        }
+                        if(r == 60 && g == 125 && b == 82) {
+                            frames.data[i + 3] = 0
+                        }
+                        if(r == 60 && g == 124 && b == 80) {
+                            frames.data[i + 3] = 0
+                        }
+                    }
+
+                    ctx.putImageData(frames, 0, 0)
+                    requestAnimationFrame(drawVid)
+                }
+                drawVid()
+                this.$refs.talkVideo.addEventListener("loadeddata", function() {
+                    drawVid()
+                })
+            },
+            clearImgGreenScreen() {
+                this.$refs.img_source.onload = () => {
+                    const ctx = this.$refs.ca.getContext('2d')
+                    ctx.drawImage(this.$refs.img_source, 0, 0)
+                    const imageData = ctx.getImageData(0, 0, this.$refs.ca.width, this.$refs.ca.height);
+                    const data = imageData.data;
+                    var lastPixelIndex = (this.$refs.ca.width * this.$refs.ca.height - 1) * 4;
+                    data[lastPixelIndex + 3] = 0
+                    // var red = data[lastPixelIndex];
+                    // var green = data[lastPixelIndex + 1];
+                    // var blue = data[lastPixelIndex + 2];
+                    // var alpha = data[lastPixelIndex + 3];
+                    // console.log(red, green, blue, alpha)
+                    // console.log(lastPixelIndex)
+                    var i = 0
+                    for (; i < data.length; i += 4) {
+                        let r = data[i]
+                        let g = data[i + 1]
+                        let b = data[i + 2]
+                        if(i + 4 == data.length) {
+                            console.log("TERAKHIR")
+                        }
+                        // 9,63,19
+                        // if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 45 && r < 80) && (g > 100 && g < 140) && (b > 50 && b < 90))) {
+                        if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 30 && r < 80) && (g > 100 && g < 140) && (b > 35 && b < 90))) {
+                            data[i + 3] = 0
+                        }
+                        if((i - 3) % this.$refs.ca.width == 0 && g > 0) {
+                            // console.log(r, g, b)
+                        }
+                        if((r >= 20 && r <= 48) && (g >= 40 && g <= 48) && (b >= 20 && b <= 25)) {
+                            data[i + 3] = 0
+                        }
+                        // if((r == 0) && (g >= 7 && g <= 9) && (b == 0)) {
+                        //     data[i + 3] = 0
+                        // }
+                        if(r == 60 && g == 125 && b == 82) {
+                            data[i + 3] = 0
+                        }
+                        if(r == 60 && g == 124 && b == 80) {
+                            data[i + 3] = 0
+                        }
+                        // if((r > 45 && r < 80) && (g > 100 && g < 140) && (b > 60 && b < 85)) {
+                        //     console.log("TES")
+                        //     data[i + 3] = 0
+                        // }
+                        // else if(r > 50 && g > 100 && b < 100) {
+                        //     data[i + 3] = 0
+                        // }
+                        // rgb(51,105,50)
+                        // else if( r == 0 && g > 24 && b == 0) {
+                        //     data[i + 3] = 0
+                        // }
+                        // else if((r > 50 && r < 100) && g > 100 && b < 100) {
+                        //     data[i + 3] = 0
+                        // }
+                        // else if(r == 9 && g == 63 && b == 19) {
+                        //     data[i + 3] = 0
+                        // }
+                    }
+                    console.log(i)
+                    ctx.putImageData(imageData, 0, 0);
+                }
             }
         },
         mounted() {
+            this.clearImgGreenScreen()
+            this.clearGreenScreen()
+            this.startWebRTCSession()
             this.getTwilioToken()
 
+            document.querySelector('canvas#myCanvas').classList.add('d-none')
             this.initSpritesheet()
+            setTimeout(() => {
+                // console.log(this.isAnimPlay)
+            }, 5000)
             this.synth = window.speechSynthesis
             
             window.speechSynthesis.cancel();
