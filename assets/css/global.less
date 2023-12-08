@@ -43,6 +43,20 @@ canvas.avatar-canvas.show {
     display: block !important;
 }
 
+canvas.rendered-avatar {
+    transform: scaleX(0.5) scaleY(0.5);
+    background-position-y: -5px;
+    background-position-x: 101px;
+    position: fixed;
+    background-image: url("../../static/img/sari-body-grapari-flipped.png");
+    background-repeat: no-repeat;
+    transform: scaleX(-0.35) scaleY(0.35);
+    z-index: 1;
+    top: -160px !important;
+    left: 225px !important;
+    background-size: 890px;
+}
+
 @media only screen and (max-width: 767px) {
     canvas.avatar-canvas {
         right: -50px;

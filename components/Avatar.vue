@@ -76,8 +76,8 @@
         </b-modal>
         <div class="d-flex justify-content-center align-items-start w-100 h-100 d-none">
             <audio id="audioPlayer"  src="" class="d-none" ref="audioPlayer"></audio>
-            <video id="talkVideo" class="img-fluid" controls autoplay ref="talkVideo" style="position: fixed; top: -2000010px; visibility: hidden;"></video>
-            <img ref="img_source" src="img/sari_tes_head.png" alt="SARI GRAPARI 4" class="img-fluid" style="position: absolute; top: 10px; right: 10px;" />
+            <video id="talkVideo" class="img-fluid" controls autoplay ref="talkVideo" style="position: fixed; top: -9910px; visibility: hidden;"></video>
+            <!-- <img ref="img_source" src="img/sari_tes_head4.png" alt="SARI GRAPARI 4" class="img-fluid" style="position: absolute; top: 10px; right: 10px;" /> -->
         </div>
         <div>
             <div id="mainInput">
@@ -107,10 +107,11 @@
                         </span>
                     </button>
                 </div>
-                <canvas id="myCanvas" ref="myCanvas" class="talking-avatar" style="position: fixed; bottom: 10px; right: 48%; transform: scaleX(0.65) scaleY(1.06);" width="512" height="512"></canvas>
-                <canvas id="ca" ref="ca" class="talking-avatar" style="position: fixed; top: 10px; left: 10px;" width="512" height="512"></canvas>
+                <canvas id="myCanvas" ref="myCanvas" class="talking-avatar rendered-avatar" style="position: fixed; top: 10px; left: 10px;" width="920" height="1595"></canvas>
             </div>
         </div>
+        <!-- <canvas id="tmp" ref="tmp" class="talking-avatar" style="visibility: hidden; position: fixed; left: -999990px; top: 0;" width="512" height="512"></canvas> -->
+        <!-- <canvas id="ca" ref="ca" class="talking-avatar rendered-avatar" style="position: fixed; top: 10px; left: 10px;" width="920" height="1595"></canvas> -->
     </div>
 </template>
 <script>
@@ -127,7 +128,7 @@
                 selectedSprite: [],
                 spriteAnim: [],
                 phaserObj: null,
-                // isAnimPlay: false,
+                isAnimPlay: false,
                 synth: null,
                 speakSynthesis: null,
                 speech_recognizer: null,
@@ -1208,8 +1209,6 @@
             onVideoStatusChange(videoIsPlaying, stream) {
                 let status;
                 if (videoIsPlaying) {
-                    document.querySelector('canvas#myCanvas').classList.add('d-block')
-                    document.querySelector('canvas#myCanvas').classList.remove('d-none')
                     // this.isAnimPlay = true
                     status = 'streaming';
                     const remoteStream = stream;
@@ -1219,9 +1218,9 @@
                     status = 'empty';
                     // this.isAnimPlay = false
                     this.$refs.talkVideo.srcObject = undefined;
-                    // document.querySelector('canvas:not(.talking-avatar)').classList.add('show')
-                    // document.querySelector('canvas#myCanvas').classList.add('d-none')
-                    // document.querySelector('canvas#myCanvas').classList.remove('d-block')
+                    document.querySelector('canvas:not(.talking-avatar)').classList.add('show')
+                    document.querySelector('canvas#myCanvas').classList.add('d-none')
+                    document.querySelector('canvas#myCanvas').classList.remove('d-block')
                     // this.status = 0
                 }
             },
@@ -1277,36 +1276,113 @@
             clearGreenScreen() {
                 var ctx = this.$refs.myCanvas.getContext('2d')
                 var obj = this
-                function drawVid() {
+                const loadImg = () => {
+                    const base64_img = this.$refs.tmp.toDataURL()
+                    var img = new Image()
+                    img.src = base64_img
+                    img.onload = () => {
+                        const new_context = this.$refs.myCanvas.getContext('2d')
+                        new_context.scale(0.58, 0.65)
+                        new_context.drawImage(img, 168, 315)
+                    }
+                }
+                const drawVid = () => {
+                    let numPixelsColumn = 41
+                    let numPixelsRow = 30
                     ctx.drawImage(obj.$refs.talkVideo, 0, 0, obj.$refs.talkVideo.offsetWidth, obj.$refs.talkVideo.offsetHeight)
                     var frames = ctx.getImageData(0, 0, obj.$refs.talkVideo.offsetWidth, obj.$refs.talkVideo.offsetHeight)
-                    for(var i = 0; i < frames.data.length; i += 4) {
-                        let r = frames.data[i]
-                        let g = frames.data[i + 1]
-                        let b = frames.data[i + 2]
-                        if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 30 && r < 80) && (g > 100 && g < 140) && (b > 35 && b < 90))) {
-                            frames.data[i + 3] = 0
-                        }
-                        if(r == 60 && g == 125 && b == 82) {
-                            frames.data[i + 3] = 0
-                        }
-                        if(r == 60 && g == 124 && b == 80) {
-                            frames.data[i + 3] = 0
+                    const width = obj.$refs.talkVideo.videoWidth
+                    const height = obj.$refs.talkVideo.videoHeight
+                    
+                    for (let x = 0; x < width; x++) {
+                            // Loop through the last two pixels of each column
+                        for (let y = height - numPixelsColumn; y < height; y++) {
+                            // Calculate the pixel index
+                            const i = (y * width + x) * 4;
+
+                            // Set the alpha channel to 0 to make it transparent
+                            frames.data[i + 3] = 0;
                         }
                     }
 
+                    for (let y = 0; y < height; y++) {
+                        // Loop through the last two pixels of each row
+                        for (let x = width - numPixelsRow; x < width; x++) {
+                            // Calculate the pixel index
+                            const i = (y * width + x) * 4;
+
+                            // Set the alpha channel to 0 to make it transparent
+                            frames.data[i + 3] = 0;
+                        }
+                    }
+                    
+                    const greenScreenRed = 31;
+                    const greenScreenGreen = 137;
+                    const greenScreenBlue = 31;
+                    const tolerance = 50; // Adjust the tolerance level as needed
+                    for(var i = 0; i < frames.data.length; i += 4) {
+                        // Check if the pixel is close to the green screen color
+                        
+                        const red = frames.data[i];
+                        const green = frames.data[i + 1];
+                        const blue = frames.data[i + 2];
+
+                        if (
+                            red >= greenScreenRed - tolerance &&
+                            red <= greenScreenRed + tolerance &&
+                            green >= greenScreenGreen - tolerance &&
+                            green <= greenScreenGreen + tolerance &&
+                            blue >= greenScreenBlue - tolerance &&
+                            blue <= greenScreenBlue + tolerance
+                        ) {
+                            // Set the alpha channel to 0 to make it transparent
+                            frames.data[i + 3] = 0;
+                        }
+                        // let r = frames.data[i]
+                        // let g = frames.data[i + 1]
+                        // let b = frames.data[i + 2]
+                        // if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 30 && r < 80) && (g > 100 && g < 140) && (b > 35 && b < 90))) {
+                        //     frames.data[i + 3] = 0
+                        // }
+                        // if(r == 60 && g == 125 && b == 82) {
+                        //     frames.data[i + 3] = 0
+                        // }
+                        // if(r == 60 && g == 124 && b == 80) {
+                        //     frames.data[i + 3] = 0
+                        // }
+                    }
+                    // ctx.scale(0.58, 0.65)
+                    // ctx.putImageData(frames, 168, 315)
                     ctx.putImageData(frames, 0, 0)
+                    const base64_img = this.$refs.myCanvas.toDataURL()
+                    var img = new Image()
+                    img.src = base64_img
+                    if(this.isAnimPlay == true) {
+                        console.log(base64_img)
+                    }
+                    // img.onload = () => {
+                    //     // console.log("INI TES AJA")
+                    //     ctx.clearRect(0, 0, 5000, 5000)
+                    //     ctx.scale(0.58, 0.65)
+                    //     ctx.drawImage(img, 168, 315)
+                    // }
                     requestAnimationFrame(drawVid)
                 }
                 drawVid()
+                // loadImg()
                 this.$refs.talkVideo.addEventListener("loadeddata", function() {
                     drawVid()
+                    // loadImg()
                 })
             },
             clearImgGreenScreen() {
                 this.$refs.img_source.onload = () => {
                     const ctx = this.$refs.ca.getContext('2d')
+                    // ctx.scale(0.5, 0.5);
                     ctx.drawImage(this.$refs.img_source, 0, 0)
+                    const width = this.$refs.ca.width
+                    // const height = this.$refs.ca.height
+                    const height = 512;
                     const imageData = ctx.getImageData(0, 0, this.$refs.ca.width, this.$refs.ca.height);
                     const data = imageData.data;
                     var lastPixelIndex = (this.$refs.ca.width * this.$refs.ca.height - 1) * 4;
@@ -1318,60 +1394,233 @@
                     // console.log(red, green, blue, alpha)
                     // console.log(lastPixelIndex)
                     var i = 0
-                    for (; i < data.length; i += 4) {
-                        let r = data[i]
-                        let g = data[i + 1]
-                        let b = data[i + 2]
-                        if(i + 4 == data.length) {
-                            console.log("TERAKHIR")
+                    const removeGreenScreen = (numPixelsColumn, numPixelsRow) => {
+                        const greenScreenRed = 31;
+                        const greenScreenGreen = 137;
+                        const greenScreenBlue = 31;
+                        const tolerance = 50; // Adjust the tolerance level as needed
+                        console.log("REMOVING GREENSCREEN")
+
+                        for (let x = 0; x < width; x++) {
+                            // Loop through the last two pixels of each column
+                            for (let y = height - numPixelsColumn; y < height; y++) {
+                                // Calculate the pixel index
+                                const i = (y * width + x) * 4;
+
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
                         }
-                        // 9,63,19
-                        // if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 45 && r < 80) && (g > 100 && g < 140) && (b > 50 && b < 90))) {
-                        if(((r < 140 && g > 120 && b < 100) || (r == 0 && g > 24 && b == 0)) || ((r > 30 && r < 80) && (g > 100 && g < 140) && (b > 35 && b < 90))) {
-                            data[i + 3] = 0
+
+                        for (let y = 0; y < height; y++) {
+                            // Loop through the last two pixels of each row
+                            for (let x = width - numPixelsRow; x < width; x++) {
+                                // Calculate the pixel index
+                                const i = (y * width + x) * 4;
+
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
                         }
-                        if((i - 3) % this.$refs.ca.width == 0 && g > 0) {
-                            // console.log(r, g, b)
+
+
+                        // Loop through each pixel and check if it's a green screen color
+                        for (let i = 0; i < data.length; i += 4) {
+                            const red = data[i];
+                            const green = data[i + 1];
+                            const blue = data[i + 2];
+
+                            // Check if the pixel is close to the green screen color
+                            if (
+                                red >= greenScreenRed - tolerance &&
+                                red <= greenScreenRed + tolerance &&
+                                green >= greenScreenGreen - tolerance &&
+                                green <= greenScreenGreen + tolerance &&
+                                blue >= greenScreenBlue - tolerance &&
+                                blue <= greenScreenBlue + tolerance
+                            ) {
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
                         }
-                        if((r >= 20 && r <= 48) && (g >= 40 && g <= 48) && (b >= 20 && b <= 25)) {
-                            data[i + 3] = 0
+
+                        // Put the modified image data back on the canvas
+                        ctx.putImageData(imageData, 0, 0);
+                        // ctx.drawImage(imageData, 0, 0)
+                        const base64_img = this.$refs.ca.toDataURL()
+                        var img = new Image()
+                        img.src = base64_img
+                        img.onload = () => {
+                            ctx.clearRect(0, 0, 5000, 5000)
+                            ctx.scale(0.58, 0.65)
+                            ctx.drawImage(img, 168, 315)
                         }
-                        // if((r == 0) && (g >= 7 && g <= 9) && (b == 0)) {
-                        //     data[i + 3] = 0
-                        // }
-                        if(r == 60 && g == 125 && b == 82) {
-                            data[i + 3] = 0
-                        }
-                        if(r == 60 && g == 124 && b == 80) {
-                            data[i + 3] = 0
-                        }
-                        // if((r > 45 && r < 80) && (g > 100 && g < 140) && (b > 60 && b < 85)) {
-                        //     console.log("TES")
-                        //     data[i + 3] = 0
-                        // }
-                        // else if(r > 50 && g > 100 && b < 100) {
-                        //     data[i + 3] = 0
-                        // }
-                        // rgb(51,105,50)
-                        // else if( r == 0 && g > 24 && b == 0) {
-                        //     data[i + 3] = 0
-                        // }
-                        // else if((r > 50 && r < 100) && g > 100 && b < 100) {
-                        //     data[i + 3] = 0
-                        // }
-                        // else if(r == 9 && g == 63 && b == 19) {
-                        //     data[i + 3] = 0
-                        // }
+                        // ctx.putImageData(imageData, 168, 315);
                     }
-                    console.log(i)
-                    ctx.putImageData(imageData, 0, 0);
+                    removeGreenScreen(41, 30)
+                    // const base64_img = this.$refs.tmp.toDataURL()
+                    // var img = new Image()
+                    // img.src = base64_img
+                    // img.onload = () => {
+                    //     const new_context = this.$refs.ca.getContext('2d')
+                    //     new_context.scale(0.58, 0.65)
+                    //     new_context.clearRect(0, 0, this.$refs.ca.width, this.$refs.ca.height)
+                    //     new_context.drawImage(img, 168, 315)
+                    // }
                 }
+            },
+            clearImgGreenScreenV2() {
+                this.$refs.img_source.onload = () => {
+                    const ctx = this.$refs.ca.getContext('2d')
+                    ctx.translate(this.$refs.ca.width, 0);
+                    // ctx.resetTransform();
+                    ctx.scale(-1, 1)
+                    ctx.drawImage(this.$refs.img_source, 150, 0)
+                    
+                    const width = this.$refs.ca.width + 200
+                    const height = 512;
+                    const imageData = ctx.getImageData(0, 0, width, this.$refs.ca.height);
+                    const data = imageData.data;
+                    const removeGreenScreen = (numPixelsColumn, numPixelsRow) => {
+                        const greenScreenRed = 31;
+                        const greenScreenGreen = 137;
+                        const greenScreenBlue = 31;
+                        const tolerance = 50; // Adjust the tolerance level as needed
+                        console.log("REMOVING GREENSCREEN")
+
+                        for (let x = 0; x < width; x++) {
+                            // Loop through the last two pixels of each column
+                            for (let y = height - numPixelsColumn; y < height; y++) {
+                                // Calculate the pixel index
+                                const i = (y * width + x) * 4;
+
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
+                        }
+
+                        // Loop through each row
+                        for (let y = 0; y < height; y++) {
+                            // Loop through the first two pixels of each row
+                            for (let x = 0; x < numPixelsRow; x++) {
+                                // Calculate the pixel index
+                                const i = (y * width + x) * 4;
+
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
+                        }
+
+
+                        // Loop through each pixel and check if it's a green screen color
+                        for (let i = 0; i < data.length; i += 4) {
+                            const red = data[i];
+                            const green = data[i + 1];
+                            const blue = data[i + 2];
+
+                            // Check if the pixel is close to the green screen color
+                            if (
+                                red >= greenScreenRed - tolerance &&
+                                red <= greenScreenRed + tolerance &&
+                                green >= greenScreenGreen - tolerance &&
+                                green <= greenScreenGreen + tolerance &&
+                                blue >= greenScreenBlue - tolerance &&
+                                blue <= greenScreenBlue + tolerance
+                            ) {
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
+                        }
+
+                        // Put the modified image data back on the canvas
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    removeGreenScreen(41, 350)
+                }
+            },
+            clearVideoGreenScreen() {
+                const drawVideo = () => {
+                    const ctx = this.$refs.myCanvas.getContext('2d')
+                    ctx.drawImage(this.$refs.talkVideo, 150, 0)
+                    
+                    const width = this.$refs.myCanvas.width + 200
+                    const height = 512;
+                    const imageData = ctx.getImageData(0, 0, width, this.$refs.myCanvas.height);
+                    const data = imageData.data;
+                    const removeGreenScreen = (numPixelsColumn, numPixelsRow) => {
+                        const greenScreenRed = 31;
+                        const greenScreenGreen = 137;
+                        const greenScreenBlue = 31;
+                        const tolerance = 50; // Adjust the tolerance level as needed
+
+                        for (let x = 0; x < width; x++) {
+                            // Loop through the last two pixels of each column
+                            for (let y = height - numPixelsColumn; y < height; y++) {
+                                // Calculate the pixel index
+                                const i = (y * width + x) * 4;
+
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
+                        }
+
+                        // Loop through each row
+                        for (let y = 0; y < height; y++) {
+                            // Loop through the first two pixels of each row
+                            for (let x = 0; x < numPixelsRow; x++) {
+                                // Calculate the pixel index
+                                const i = (y * width + x) * 4;
+
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
+                        }
+
+
+                        // Loop through each pixel and check if it's a green screen color
+                        for (let i = 0; i < data.length; i += 4) {
+                            const red = data[i];
+                            const green = data[i + 1];
+                            const blue = data[i + 2];
+
+                            // Check if the pixel is close to the green screen color
+                            if (
+                                red >= greenScreenRed - tolerance &&
+                                red <= greenScreenRed + tolerance &&
+                                green >= greenScreenGreen - tolerance &&
+                                green <= greenScreenGreen + tolerance &&
+                                blue >= greenScreenBlue - tolerance &&
+                                blue <= greenScreenBlue + tolerance
+                            ) {
+                                // Set the alpha channel to 0 to make it transparent
+                                data[i + 3] = 0;
+                            }
+                        }
+
+                        // Put the modified image data back on the canvas
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    removeGreenScreen(41, 350)
+                    requestAnimationFrame(drawVideo)
+                }
+                // drawVideo()
+                this.$refs.talkVideo.addEventListener("loadeddata", () => {
+                    drawVideo()
+                    const ctx = this.$refs.myCanvas.getContext('2d')
+                    ctx.translate(this.$refs.myCanvas.width, 0);
+                    ctx.scale(-1, 1)
+                    document.querySelector('canvas#myCanvas').classList.add('d-block')
+                    document.querySelector('canvas#myCanvas').classList.remove('d-none')
+                    // ctx.resetTransform();
+                })
             }
         },
         mounted() {
-            this.clearImgGreenScreen()
-            this.clearGreenScreen()
+            // this.clearImgGreenScreenV2()
+            // this.clearImgGreenScreen()
+            // this.clearGreenScreen()
             this.startWebRTCSession()
+            this.clearVideoGreenScreen()
             this.getTwilioToken()
 
             document.querySelector('canvas#myCanvas').classList.add('d-none')
