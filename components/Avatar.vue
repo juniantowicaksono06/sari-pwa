@@ -851,14 +851,15 @@
                 }
 
                 if(response_text != "" && response_text != null && response_text != undefined && tag != "unknown") {
-                    this.loadText(response_text)
+                    // this.loadText(response_text)
+                    this.actionStartStream(response_text)
                     var fn = null
                     if(tag == "telpon") {
                         fn = () => {
                             this.actionCall(contact['phone'])
                         }
                     }
-                    this.actionPlayAnim(fn)
+                    // this.actionPlayAnim(fn)
                 }
 
                 if(tag == "unknown") {
@@ -1098,7 +1099,7 @@
                         "stitch": true
                     },
                     "persist": false,
-                    "source_url": "https://raw.githubusercontent.com/juniantowicaksono06/sari-store-img/main/sari_grapari2.png"
+                    "source_url": "https://raw.githubusercontent.com/juniantowicaksono06/sari-store-img/main/sari_head2.png"
                 }
                 this.textInput = ''
                 // let result = await this.$axios.$post('https://api.d-id.com/talks', JSON.stringify(payload), {
@@ -1141,10 +1142,13 @@
 
                 this.$refs.talkVideo.src = talks['result_url']
             },
-            async actionStartStream() {
+            async actionStartStream(text = null) {
                 const streamId = this.streamId
                 const sessionId = this.sessionId
-                const textInput = this.textInput
+                let textInput = this.textInput
+                if(text != null) {
+                    textInput = text
+                }
                 this.$store.dispatch('loading/actionShowLoading')
                 const payload = JSON.stringify(
                     {
@@ -1601,6 +1605,7 @@
                         ctx.putImageData(imageData, 0, 0);
                     }
                     removeGreenScreen(41, 350)
+                    // removeGreenScreen(21, 350)
                     requestAnimationFrame(drawVideo)
                 }
                 // drawVideo()
